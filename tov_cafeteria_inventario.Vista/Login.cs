@@ -33,7 +33,6 @@ namespace tov_cafeteria_inventario.Vista
                 {
                     MessageBox.Show("Inicio de sesión exitoso!", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // ✅ REGISTRAR EN BITÁCORA
                     var bitacoraController = new BitacoraController();
                     bitacoraController.RegistrarAccion(resultado.usuarioID, "Inicio de sesión");
 

@@ -10,24 +10,26 @@ namespace tov_cafeteria_inventario.Controlador
     public class InventarioController
     {
         private string connectionString = "Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;";
-        /*using tov_cafeteria_inventario.Vista;
-         string connectionString = ConexionBD.ObtenerCadena();*/
+
         public DataTable ObtenerMovimientosIndividuales()
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"
-                SELECT 
-                    i.MovimientoID,
-                    p.Nombre AS NombreProducto,
-                    i.TipoMovimiento,
-                    i.Cantidad,
-                    i.PrecioUnitario,
-                    i.PrecioTotal,
-                    i.FechaMovimiento
-                FROM Inventario i
-                INNER JOIN Productos p ON i.ProductoID = p.ProductoID
-                ORDER BY i.FechaMovimiento DESC;";
+        SELECT 
+            i.MovimientoID,
+            i.ProductoID,
+            p.Nombre AS NombreProducto,
+            pr.ProveedorID,
+            i.TipoMovimiento,
+            i.Cantidad,
+            i.PrecioUnitario,
+            i.PrecioTotal,
+            i.FechaMovimiento
+        FROM Inventario i
+        INNER JOIN Productos p ON i.ProductoID = p.ProductoID
+        INNER JOIN Proveedores pr ON p.ProveedorID = pr.ProveedorID
+        ORDER BY i.FechaMovimiento DESC;";
 
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
                 DataTable table = new DataTable();
@@ -35,6 +37,7 @@ namespace tov_cafeteria_inventario.Controlador
                 return table;
             }
         }
+
 
         public bool EliminarMovimiento(int movimientoID)
         {

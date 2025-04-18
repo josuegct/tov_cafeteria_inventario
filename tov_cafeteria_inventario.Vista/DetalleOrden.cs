@@ -167,21 +167,20 @@ namespace tov_cafeteria_inventario.Vista
 
                 int cantidad = Convert.ToInt32(txtCantidad.Text);
                 decimal precioUnitario = Convert.ToDecimal(txtPrecio.Text);
-                decimal precioTotal = cantidad * precioUnitario;
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
                     string query = @"
-                        INSERT INTO OrdenDetalles (OrdenID, ProductoID, Cantidad, Precio)
-                        VALUES (@OrdenID, @ProductoID, @Cantidad, @Precio)";
+                INSERT INTO OrdenDetalles (OrdenID, ProductoID, Cantidad, Precio)
+                VALUES (@OrdenID, @ProductoID, @Cantidad, @Precio)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@OrdenID", ordenID);
                         command.Parameters.AddWithValue("@ProductoID", GetProductoIDFromName(productoNombre));
                         command.Parameters.AddWithValue("@Cantidad", cantidad);
-                        command.Parameters.AddWithValue("@Precio", precioTotal);
+                        command.Parameters.AddWithValue("@Precio", precioUnitario); // Guardamos precio UNITARIO aquí
                         command.ExecuteNonQuery();
                     }
                 }
@@ -194,6 +193,7 @@ namespace tov_cafeteria_inventario.Vista
                 MessageBox.Show("Error al agregar: " + ex.Message);
             }
         }
+
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
@@ -251,7 +251,7 @@ namespace tov_cafeteria_inventario.Vista
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
                             command.Parameters.AddWithValue("@Cantidad", cantidad);
-                            command.Parameters.AddWithValue("@Precio", precioTotal);
+                            command.Parameters.AddWithValue("@Precio", precioUnitario);
                             command.Parameters.AddWithValue("@OrdenDetalleID", detalleID);
                             command.ExecuteNonQuery();
                         }

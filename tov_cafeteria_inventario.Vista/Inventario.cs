@@ -20,35 +20,30 @@ namespace tov_cafeteria_inventario.Vista
         public Inventario(int usuarioID)
         {
             InitializeComponent();
+            this.usuarioID = usuarioID;
             dgvInventario.AllowUserToAddRows = false;
+
+            txtMovimientoID.ReadOnly = true;
+            txtMovimientoID.Enabled = false;
+            txtPrecioTotal.ReadOnly = true;
+
             CargarMovimientos();
             CargarProveedores();
-            this.usuarioID = usuarioID;        
+
             cmbProveedor.SelectedIndexChanged += CmbProveedor_SelectedIndexChanged;
             dgvInventario.CellClick += dgvInventario_CellClick;
-            txtPrecioTotal.ReadOnly = true;
             txtCantidad.TextChanged += CalcularPrecioTotal;
             txtPrecioUnitario.TextChanged += CalcularPrecioTotal;
         }
-
-        // ==================== CARGA DE DATOS =========================
 
         private void CargarProveedores()
         {
             try
             {
                 var listaProveedores = proveedorController.ObtenerProveedores();
-                if (listaProveedores.Count == 0)
-                {
-                    MessageBox.Show("⚠️ No hay proveedores disponibles.");
-                    return;
-                }
-
-                cmbProveedor.DataSource = null;
                 cmbProveedor.DataSource = listaProveedores;
                 cmbProveedor.DisplayMember = "Nombre";
                 cmbProveedor.ValueMember = "ProveedorID";
-                cmbProveedor.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -58,11 +53,10 @@ namespace tov_cafeteria_inventario.Vista
 
         private void CmbProveedor_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbProveedor.SelectedValue == null || !(cmbProveedor.SelectedValue is int))
-                return;
-
-            int proveedorID = (int)cmbProveedor.SelectedValue;
-            CargarProductosPorProveedor(proveedorID);
+            if (cmbProveedor.SelectedValue is int proveedorID)
+            {
+                CargarProductosPorProveedor(proveedorID);
+            }
         }
 
         private void CargarProductosPorProveedor(int proveedorID)
@@ -70,12 +64,9 @@ namespace tov_cafeteria_inventario.Vista
             try
             {
                 var productos = productoController.ObtenerProductosPorProveedor(proveedorID);
-                cmbProducto.DataSource = null;
                 cmbProducto.DataSource = productos;
                 cmbProducto.DisplayMember = "Nombre";
                 cmbProducto.ValueMember = "ProductoID";
-                if (productos.Count == 0)
-                    MessageBox.Show("⚠️ Este proveedor no tiene productos.");
             }
             catch (Exception ex)
             {
@@ -88,22 +79,10 @@ namespace tov_cafeteria_inventario.Vista
             try
             {
                 DataTable tabla = inventarioController.ObtenerMovimientosIndividuales();
-
-                // 🔥 Limpia por completo el DataGridView antes de asignar datos nuevos
-                dgvInventario.DataSource = null;
-                dgvInventario.Rows.Clear();
-                dgvInventario.Columns.Clear();
-
-                if (tabla.Rows.Count == 0)
-                {
-                    MessageBox.Show("⚠️ No hay movimientos en la base de datos.");
-                    return;
-                }
-
                 dgvInventario.DataSource = tabla;
 
-                if (dgvInventario.Columns.Contains("MovimientoID"))
-                    dgvInventario.Columns["MovimientoID"].Visible = false;
+                if (tabla.Columns.Contains("MovimientoID"))
+                    dgvInventario.Columns["MovimientoID"].HeaderText = "ID";
 
                 dgvInventario.Columns["NombreProducto"].HeaderText = "Producto";
                 dgvInventario.Columns["TipoMovimiento"].HeaderText = "Tipo";
@@ -118,17 +97,31 @@ namespace tov_cafeteria_inventario.Vista
             }
         }
 
-
-
-        // ==================== EVENTOS =========================
-
         private void dgvInventario_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
                 var fila = dgvInventario.Rows[e.RowIndex];
-                movimientoSeleccionadoID = Convert.ToInt32(fila.Cells["MovimientoID"].Value);
-                cmbProducto.Text = fila.Cells["NombreProducto"].Value.ToString();
+
+                if (int.TryParse(fila.Cells["MovimientoID"].Value?.ToString(), out movimientoSeleccionadoID))
+                {
+                    txtMovimientoID.Text = movimientoSeleccionadoID.ToString();
+                }
+
+                // Solo si las columnas existen
+                if (dgvInventario.Columns.Contains("ProveedorID"))
+                {
+                    int proveedorID = Convert.ToInt32(fila.Cells["ProveedorID"].Value);
+                    cmbProveedor.SelectedValue = proveedorID;
+                    CargarProductosPorProveedor(proveedorID);
+                }
+
+                if (dgvInventario.Columns.Contains("ProductoID"))
+                {
+                    int productoID = Convert.ToInt32(fila.Cells["ProductoID"].Value);
+                    cmbProducto.SelectedValue = productoID;
+                }
+
                 cmbTipoMovimiento.Text = fila.Cells["TipoMovimiento"].Value.ToString();
                 txtCantidad.Text = fila.Cells["Cantidad"].Value.ToString();
                 txtPrecioUnitario.Text = fila.Cells["PrecioUnitario"].Value.ToString();
@@ -136,129 +129,203 @@ namespace tov_cafeteria_inventario.Vista
             }
         }
 
-        private void btnActualizar_Click(object sender, EventArgs e)
-        {
-            CargarMovimientos();
-            LimpiarCampos();
-        }
 
-        private void btnEliminar_Click(object sender, EventArgs e)
+        private void btnAgregar_Click(object sender, EventArgs e)
         {
-            if (movimientoSeleccionadoID == -1)
+            if (!int.TryParse(txtCantidad.Text, out int cantidad) || cantidad <= 0 ||
+                !decimal.TryParse(txtPrecioUnitario.Text, out decimal precioUnitario) || precioUnitario <= 0)
             {
-                MessageBox.Show("Seleccione un movimiento para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Datos inválidos.");
                 return;
             }
 
-            var confirmar = MessageBox.Show("¿Desea eliminar el movimiento seleccionado?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirmar != DialogResult.Yes) return;
-
-            try
+            if (cmbTipoMovimiento.Text != "Ingreso")
             {
-                bool eliminado = inventarioController.EliminarMovimiento(movimientoSeleccionadoID);
-                if (eliminado)
-                {
-                    MessageBox.Show("Movimiento eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LimpiarCampos();
-                    CargarMovimientos();
-                }
-                else
-                {
-                    MessageBox.Show("⚠️ No se encontró el movimiento para eliminar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al eliminar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnRegistrar_Click(object sender, EventArgs e)
-        {
-            if (cmbProducto.SelectedValue == null || string.IsNullOrWhiteSpace(cmbTipoMovimiento.Text)
-                || string.IsNullOrWhiteSpace(txtCantidad.Text) || string.IsNullOrWhiteSpace(txtPrecioUnitario.Text))
-            {
-                MessageBox.Show("Complete todos los campos requeridos.", "Campos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!int.TryParse(txtCantidad.Text, out int cantidad) || cantidad <= 0)
-            {
-                MessageBox.Show("Ingrese una cantidad válida.", "Cantidad inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!decimal.TryParse(txtPrecioUnitario.Text, out decimal precioUnitario) || precioUnitario <= 0)
-            {
-                MessageBox.Show("Ingrese un precio unitario válido.", "Precio inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Solo se permiten ingresos.");
                 return;
             }
 
             decimal precioTotal = cantidad * precioUnitario;
-            txtPrecioTotal.Text = precioTotal.ToString("0.00");
 
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    SqlCommand cmd;
-
-                    if (movimientoSeleccionadoID == -1)
-                    {
-                        cmd = new SqlCommand("sp_RegistrarMovimiento", conn);
-                        cmd.CommandType = CommandType.StoredProcedure;
-                    }
-                    else
-                    {
-                        string updateQuery = "UPDATE Inventario SET ProductoID=@ProductoID, TipoMovimiento=@TipoMovimiento, Cantidad=@Cantidad, UsuarioID=@UsuarioID, PrecioUnitario=@PrecioUnitario, PrecioTotal=@PrecioTotal WHERE MovimientoID=@MovimientoID";
-                        cmd = new SqlCommand(updateQuery, conn);
-                        cmd.CommandType = CommandType.Text;
-                        cmd.Parameters.AddWithValue("@MovimientoID", movimientoSeleccionadoID);
-                    }
-
+                    SqlCommand cmd = new SqlCommand("sp_RegistrarMovimiento", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@ProductoID", Convert.ToInt32(cmbProducto.SelectedValue));
                     cmd.Parameters.AddWithValue("@TipoMovimiento", cmbTipoMovimiento.Text);
                     cmd.Parameters.AddWithValue("@Cantidad", cantidad);
                     cmd.Parameters.AddWithValue("@UsuarioID", usuarioID);
                     cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
                     cmd.Parameters.AddWithValue("@PrecioTotal", precioTotal);
-
                     cmd.ExecuteNonQuery();
                 }
 
-                MessageBox.Show("Movimiento guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Movimiento registrado.");
                 LimpiarCampos();
                 CargarMovimientos();
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Error SQL:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
 
-        // ==================== UTILIDADES =========================
-
-        private void LimpiarCampos()
+        private void btnTestID_Click(object sender, EventArgs e)
         {
-            txtCantidad.Clear();
-            txtPrecioUnitario.Clear();
-            txtPrecioTotal.Clear();
-            cmbTipoMovimiento.SelectedIndex = -1;
-            movimientoSeleccionadoID = -1;
+            if (!int.TryParse(txtMovimientoID.Text, out int id)) return;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Inventario WHERE MovimientoID = @ID", conn);
+                cmd.Parameters.AddWithValue("@ID", id);
+                int count = (int)cmd.ExecuteScalar();
+                MessageBox.Show("Existe: " + (count > 0));
+            }
+        }
+
+        private void btnVerDatosID_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtMovimientoID.Text, out int id)) return;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Inventario WHERE MovimientoID = @ID", conn);
+                cmd.Parameters.AddWithValue("@ID", id);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    string data = $"ProductoID: {reader["ProductoID"]}\nTipo: {reader["TipoMovimiento"]}\nCantidad: {reader["Cantidad"]}";
+                    MessageBox.Show(data, "Datos del Movimiento");
+                }
+                else
+                {
+                    MessageBox.Show("No encontrado.");
+                }
+            }
         }
 
         private void CalcularPrecioTotal(object sender, EventArgs e)
         {
             if (int.TryParse(txtCantidad.Text, out int cantidad) && decimal.TryParse(txtPrecioUnitario.Text, out decimal precioUnitario))
             {
-                decimal total = cantidad * precioUnitario;
-                txtPrecioTotal.Text = total.ToString("0.00");
-            }
-            else
-            {
-                txtPrecioTotal.Text = "";
+                txtPrecioTotal.Text = (cantidad * precioUnitario).ToString("0.00");
             }
         }
+
+        private void LimpiarCampos()
+        {
+            txtCantidad.Clear();
+            txtPrecioUnitario.Clear();
+            txtPrecioTotal.Clear();
+            txtMovimientoID.Clear();
+            cmbTipoMovimiento.SelectedIndex = -1;
+            movimientoSeleccionadoID = -1;
+        }
+
+        private void btnEliminar2_Click(object sender, EventArgs e)
+        {
+            if (!int.TryParse(txtMovimientoID.Text, out int movimientoID))
+            {
+                MessageBox.Show("ID no válido.");
+                return;
+            }
+
+            if (!cmbTipoMovimiento.Text.Equals("Correccion", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Solo se pueden eliminar correcciones.");
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show("¿Eliminar movimiento?", "Confirmar", MessageBoxButtons.YesNo);
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("DELETE FROM Inventario WHERE MovimientoID = @ID", conn);
+                    cmd.Parameters.AddWithValue("@ID", movimientoID);
+                    int result = cmd.ExecuteNonQuery();
+                    MessageBox.Show("Eliminados: " + result);
+                    CargarMovimientos();
+                    LimpiarCampos();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error SQL al eliminar: " + ex.Message);
+            }
+        }
+
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            
+            if (movimientoSeleccionadoID == -1)
+            {
+                MessageBox.Show("Seleccione un movimiento primero.");
+                return;
+            }
+
+            if (!int.TryParse(txtCantidad.Text, out int cantidad) || cantidad <= 0 ||
+                !decimal.TryParse(txtPrecioUnitario.Text, out decimal precioUnitario) || precioUnitario <= 0)
+            {
+                MessageBox.Show("Datos inválidos.");
+                return;
+            }
+
+            int productoID = Convert.ToInt32(cmbProducto.SelectedValue);
+            string tipoMovimiento = cmbTipoMovimiento.Text;
+            decimal precioTotal = cantidad * precioUnitario;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                UPDATE Inventario
+                SET 
+                    ProductoID = @ProductoID,
+                    TipoMovimiento = @TipoMovimiento,
+                    Cantidad = @Cantidad,
+                    PrecioUnitario = @PrecioUnitario,
+                    PrecioTotal = @PrecioTotal
+                WHERE MovimientoID = @MovimientoID";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@ProductoID", productoID);
+                    cmd.Parameters.AddWithValue("@TipoMovimiento", tipoMovimiento);
+                    cmd.Parameters.AddWithValue("@Cantidad", cantidad);
+                    cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
+                    cmd.Parameters.AddWithValue("@PrecioTotal", precioTotal);
+                    cmd.Parameters.AddWithValue("@MovimientoID", movimientoSeleccionadoID);
+
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result > 0)
+                    {
+                        MessageBox.Show("Movimiento actualizado correctamente.");
+                        LimpiarCampos();
+                        CargarMovimientos();
+                    }
+                    else
+                    {
+                        MessageBox.Show("No se encontró el movimiento para actualizar.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al modificar movimiento: " + ex.Message);
+            }
+        }
+
     }
 }
+
