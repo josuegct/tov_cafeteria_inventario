@@ -168,5 +168,19 @@ namespace tov_cafeteria_inventario.Controlador
                 return sha256.ComputeHash(Encoding.UTF8.GetBytes(contraseña));
             }
         }
+
+        // ✅ Método agregado: ObtenerRoleID
+        public int ObtenerRoleID(int usuarioID)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT RoleID FROM Usuarios WHERE UsuarioID = @UsuarioID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@UsuarioID", usuarioID);
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : -1;
+            }
+        }
     }
 }

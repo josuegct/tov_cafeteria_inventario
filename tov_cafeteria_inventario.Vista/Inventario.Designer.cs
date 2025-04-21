@@ -43,6 +43,8 @@
             this.txtMovimientoID = new System.Windows.Forms.TextBox();
             this.btnEliminar2 = new System.Windows.Forms.Button();
             this.btnModificar = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cmbUnidadMedida = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInventario)).BeginInit();
             this.SuspendLayout();
             // 
@@ -78,35 +80,36 @@
             // 
             // txtCantidad
             // 
-            this.txtCantidad.Location = new System.Drawing.Point(118, 207);
+            this.txtCantidad.Location = new System.Drawing.Point(598, 100);
             this.txtCantidad.Name = "txtCantidad";
             this.txtCantidad.Size = new System.Drawing.Size(237, 20);
             this.txtCantidad.TabIndex = 7;
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(430, 204);
+            this.btnAgregar.Location = new System.Drawing.Point(981, 93);
             this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(75, 23);
+            this.btnAgregar.Size = new System.Drawing.Size(117, 23);
             this.btnAgregar.TabIndex = 8;
             this.btnAgregar.Text = "Agregar";
             this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
             // 
             // btnActualizar
             // 
-            this.btnActualizar.Location = new System.Drawing.Point(592, 204);
+            this.btnActualizar.Location = new System.Drawing.Point(981, 180);
             this.btnActualizar.Name = "btnActualizar";
-            this.btnActualizar.Size = new System.Drawing.Size(75, 23);
+            this.btnActualizar.Size = new System.Drawing.Size(117, 23);
             this.btnActualizar.TabIndex = 9;
             this.btnActualizar.Text = "Actualizar";
+            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
             // 
             // dgvInventario
             // 
             this.dgvInventario.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvInventario.Location = new System.Drawing.Point(28, 233);
+            this.dgvInventario.Location = new System.Drawing.Point(28, 218);
             this.dgvInventario.Name = "dgvInventario";
             this.dgvInventario.ReadOnly = true;
-            this.dgvInventario.Size = new System.Drawing.Size(1070, 359);
+            this.dgvInventario.Size = new System.Drawing.Size(1070, 374);
             this.dgvInventario.TabIndex = 10;
             // 
             // lblProveedor
@@ -139,7 +142,7 @@
             // lblCantidad
             // 
             this.lblCantidad.AutoSize = true;
-            this.lblCantidad.Location = new System.Drawing.Point(28, 210);
+            this.lblCantidad.Location = new System.Drawing.Point(514, 103);
             this.lblCantidad.Name = "lblCantidad";
             this.lblCantidad.Size = new System.Drawing.Size(52, 13);
             this.lblCantidad.TabIndex = 6;
@@ -147,7 +150,7 @@
             // 
             // txtPrecioUnitario
             // 
-            this.txtPrecioUnitario.Location = new System.Drawing.Point(511, 100);
+            this.txtPrecioUnitario.Location = new System.Drawing.Point(598, 153);
             this.txtPrecioUnitario.Name = "txtPrecioUnitario";
             this.txtPrecioUnitario.Size = new System.Drawing.Size(237, 20);
             this.txtPrecioUnitario.TabIndex = 7;
@@ -155,7 +158,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(427, 103);
+            this.label1.Location = new System.Drawing.Point(514, 153);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 13);
             this.label1.TabIndex = 6;
@@ -163,7 +166,7 @@
             // 
             // txtPrecioTotal
             // 
-            this.txtPrecioTotal.Location = new System.Drawing.Point(511, 126);
+            this.txtPrecioTotal.Location = new System.Drawing.Point(598, 179);
             this.txtPrecioTotal.Name = "txtPrecioTotal";
             this.txtPrecioTotal.Size = new System.Drawing.Size(237, 20);
             this.txtPrecioTotal.TabIndex = 7;
@@ -171,7 +174,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(427, 129);
+            this.label2.Location = new System.Drawing.Point(514, 179);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(67, 13);
             this.label2.TabIndex = 6;
@@ -205,9 +208,9 @@
             // 
             // btnEliminar2
             // 
-            this.btnEliminar2.Location = new System.Drawing.Point(673, 204);
+            this.btnEliminar2.Location = new System.Drawing.Point(981, 151);
             this.btnEliminar2.Name = "btnEliminar2";
-            this.btnEliminar2.Size = new System.Drawing.Size(75, 23);
+            this.btnEliminar2.Size = new System.Drawing.Size(117, 23);
             this.btnEliminar2.TabIndex = 14;
             this.btnEliminar2.Text = "Eliminar";
             this.btnEliminar2.UseVisualStyleBackColor = true;
@@ -215,17 +218,54 @@
             // 
             // btnModificar
             // 
-            this.btnModificar.Location = new System.Drawing.Point(511, 204);
+            this.btnModificar.Location = new System.Drawing.Point(981, 122);
             this.btnModificar.Name = "btnModificar";
-            this.btnModificar.Size = new System.Drawing.Size(75, 23);
+            this.btnModificar.Size = new System.Drawing.Size(117, 23);
             this.btnModificar.TabIndex = 15;
             this.btnModificar.Text = "Modificar";
             this.btnModificar.UseVisualStyleBackColor = true;
             this.btnModificar.Click += new System.EventHandler(this.btnModificar_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(514, 129);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(45, 13);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "Medida:";
+            // 
+            // cmbUnidadMedida
+            // 
+            this.cmbUnidadMedida.FormattingEnabled = true;
+            this.cmbUnidadMedida.Items.AddRange(new object[] {
+            "Gramos (g)",
+            "Kilogramos (kg)",
+            "Mililitros (ml)",
+            "Litros (l)",
+            "Unidades (u)",
+            "Docenas",
+            "Porciones",
+            "Tazas",
+            "Cucharadas",
+            "Cucharaditas",
+            "Paquetes",
+            "Bolsas",
+            "Latas",
+            "Envases",
+            "Rollos",
+            "Metros"});
+            this.cmbUnidadMedida.Location = new System.Drawing.Point(598, 126);
+            this.cmbUnidadMedida.Name = "cmbUnidadMedida";
+            this.cmbUnidadMedida.Size = new System.Drawing.Size(237, 21);
+            this.cmbUnidadMedida.TabIndex = 17;
+            this.cmbUnidadMedida.SelectedIndexChanged += new System.EventHandler(this.cmbUnidadMedida_SelectedIndexChanged);
+            // 
             // Inventario
             // 
             this.ClientSize = new System.Drawing.Size(1125, 641);
+            this.Controls.Add(this.cmbUnidadMedida);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnModificar);
             this.Controls.Add(this.btnEliminar2);
             this.Controls.Add(this.lblMovimientoID);
@@ -262,5 +302,7 @@
         private System.Windows.Forms.TextBox txtMovimientoID;
         private System.Windows.Forms.Button btnEliminar2;
         private System.Windows.Forms.Button btnModificar;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cmbUnidadMedida;
     }
 }

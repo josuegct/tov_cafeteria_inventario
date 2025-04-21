@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Windows.Forms;
+using tov_cafeteria_inventario.Controlador;
 
 namespace tov_cafeteria_inventario.Vista
 {
     public partial class Reportes : Form
     {
         private readonly int usuarioID;
+        private readonly UsuarioController usuarioController = new UsuarioController();
 
         public Reportes(int usuarioID)
         {
             InitializeComponent();
             this.usuarioID = usuarioID;
+
+            // Validación de rol antes de permitir uso del formulario
+            int roleID = usuarioController.ObtenerRoleID(usuarioID);
+            if (roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder al módulo de Reportes.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
         }
 
         private void Reportes_Load(object sender, EventArgs e)

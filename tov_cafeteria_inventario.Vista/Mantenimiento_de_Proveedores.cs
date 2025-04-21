@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using tov_cafeteria_inventario.Controlador;
 using tov_cafeteria_inventario.Modelo;
 using System.Linq;
+using System.Drawing;
 
 namespace tov_cafeteria_inventario.Vista
 {
@@ -18,6 +19,12 @@ namespace tov_cafeteria_inventario.Vista
             InitializeComponent();
             this.usuarioID = usuarioID;
             this.FormClosed += Mantenimiento_de_Proveedores_FormClosed;
+
+            // Simular PlaceholderText en txtCorreo
+            txtCorreo.ForeColor = Color.Gray;
+            txtCorreo.Text = "ejemplo@correo.com";
+            txtCorreo.Enter += txtCorreo_Enter;
+            txtCorreo.Leave += txtCorreo_Leave;
         }
 
         private void Mantenimiento_de_Proveedores_FormClosed(object sender, FormClosedEventArgs e)
@@ -55,12 +62,14 @@ namespace tov_cafeteria_inventario.Vista
                 return;
             }
 
+            string correoReal = (txtCorreo.Text == "ejemplo@correo.com") ? "" : txtCorreo.Text;
+
             Proveedor proveedor = new Proveedor
             {
                 Nombre = txt_nombre.Text,
-                Cedula = txt_cedula.Text,
-                Telefono = txt_telefono.Text,
-                Correo = txt_correo.Text,
+                Cedula = mtbCedula.Text,
+                Telefono = mtbTelefono.Text,
+                Correo = correoReal,
                 Direccion = txt_direccion.Text
             };
 
@@ -91,13 +100,15 @@ namespace tov_cafeteria_inventario.Vista
                 return;
             }
 
+            string correoReal = (txtCorreo.Text == "ejemplo@correo.com") ? "" : txtCorreo.Text;
+
             Proveedor proveedor = new Proveedor
             {
                 ProveedorID = proveedorIDSeleccionado,
                 Nombre = txt_nombre.Text,
-                Cedula = txt_cedula.Text,
-                Telefono = txt_telefono.Text,
-                Correo = txt_correo.Text,
+                Cedula = mtbCedula.Text,
+                Telefono = mtbTelefono.Text,
+                Correo = correoReal,
                 Direccion = txt_direccion.Text
             };
 
@@ -146,9 +157,10 @@ namespace tov_cafeteria_inventario.Vista
         private void LimpiarCampos()
         {
             txt_nombre.Clear();
-            txt_cedula.Clear();
-            txt_telefono.Clear();
-            txt_correo.Clear();
+            mtbCedula.Clear();
+            mtbTelefono.Clear();
+            txtCorreo.ForeColor = Color.Gray;
+            txtCorreo.Text = "ejemplo@correo.com";
             txt_direccion.Clear();
             txtProductList.Clear();
             proveedorIDSeleccionado = -1;
@@ -156,10 +168,12 @@ namespace tov_cafeteria_inventario.Vista
 
         private bool CamposVacios()
         {
+            bool correoVacio = string.IsNullOrWhiteSpace(txtCorreo.Text) || txtCorreo.Text == "ejemplo@correo.com";
+
             return string.IsNullOrWhiteSpace(txt_nombre.Text) ||
-                   string.IsNullOrWhiteSpace(txt_cedula.Text) ||
-                   string.IsNullOrWhiteSpace(txt_telefono.Text) ||
-                   string.IsNullOrWhiteSpace(txt_correo.Text) ||
+                   string.IsNullOrWhiteSpace(mtbCedula.Text) ||
+                   string.IsNullOrWhiteSpace(mtbTelefono.Text) ||
+                   correoVacio ||
                    string.IsNullOrWhiteSpace(txt_direccion.Text);
         }
 
@@ -170,20 +184,45 @@ namespace tov_cafeteria_inventario.Vista
                 DataGridViewRow row = dataGridViewProveedores.SelectedRows[0];
                 proveedorIDSeleccionado = Convert.ToInt32(row.Cells["ProveedorID"].Value);
                 txt_nombre.Text = row.Cells["Nombre"].Value.ToString();
-                txt_cedula.Text = row.Cells["Cedula"].Value.ToString();
-                txt_telefono.Text = row.Cells["Telefono"].Value.ToString();
-                txt_correo.Text = row.Cells["Correo"].Value.ToString();
-                txt_direccion.Text = row.Cells["Direccion"].Value.ToString();
+                mtbCedula.Text = row.Cells["Cedula"].Value.ToString();
+                mtbTelefono.Text = row.Cells["Telefono"].Value.ToString();
 
-                var productos = productoController.ObtenerProductosPorProveedor(proveedorIDSeleccionado);
-                if (productos.Count > 0)
+                string correo = row.Cells["Correo"].Value.ToString();
+                if (string.IsNullOrWhiteSpace(correo))
                 {
-                    txtProductList.Text = string.Join(Environment.NewLine, productos.Select(p => p.Nombre));
+                    txtCorreo.ForeColor = Color.Gray;
+                    txtCorreo.Text = "ejemplo@correo.com";
                 }
                 else
                 {
-                    txtProductList.Text = string.Empty;
+                    txtCorreo.ForeColor = Color.Black;
+                    txtCorreo.Text = correo;
                 }
+
+                txt_direccion.Text = row.Cells["Direccion"].Value.ToString();
+
+                var productos = productoController.ObtenerProductosPorProveedor(proveedorIDSeleccionado);
+                txtProductList.Text = productos.Count > 0
+                    ? string.Join(Environment.NewLine, productos.Select(p => p.Nombre))
+                    : string.Empty;
+            }
+        }
+
+        private void txtCorreo_Enter(object sender, EventArgs e)
+        {
+            if (txtCorreo.Text == "ejemplo@correo.com")
+            {
+                txtCorreo.Text = "";
+                txtCorreo.ForeColor = Color.Black;
+            }
+        }
+
+        private void txtCorreo_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtCorreo.Text))
+            {
+                txtCorreo.Text = "ejemplo@correo.com";
+                txtCorreo.ForeColor = Color.Gray;
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
@@ -12,19 +11,29 @@ namespace tov_cafeteria_inventario.Vista
     {
         private readonly OrdenController ordenController = new OrdenController();
         private int usuarioID;
+        private int RoleID;
 
         public Ordenes(int usuarioID)
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             this.usuarioID = usuarioID;
+
+            UsuarioController usuarioController = new UsuarioController();
+            this.RoleID = usuarioController.ObtenerRoleID(usuarioID);
+
             txtUsuarioID.Text = usuarioID.ToString();
             txtUsuarioID.Enabled = false;
+
             dgvOrdenes.SelectionChanged += dgvOrdenes_SelectionChanged;
+            dgvOrdenes.AllowUserToAddRows = false;
+            dgvOrdenes.ReadOnly = true;
+
             cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso", "Completada" });
             CargarProveedores();
             CargarOrdenes();
         }
+
 
         private void CargarOrdenes()
         {
@@ -34,21 +43,30 @@ namespace tov_cafeteria_inventario.Vista
                 dgvOrdenes.DataSource = ordenes;
 
                 dgvOrdenes.Columns["OrdenID"].HeaderText = "ID";
+                dgvOrdenes.Columns["UsuarioID"].HeaderText = "Usuario";
                 dgvOrdenes.Columns["FechaOrden"].HeaderText = "Fecha";
                 dgvOrdenes.Columns["Estado"].HeaderText = "Estado";
-                dgvOrdenes.Columns["NombreProducto"].HeaderText = "Producto";
+                dgvOrdenes.Columns["ProveedorID"].HeaderText = "ProveedorID";
                 dgvOrdenes.Columns["NombreProveedor"].HeaderText = "Proveedor";
+                dgvOrdenes.Columns["ProductoID"].HeaderText = "ProductoID";
+                dgvOrdenes.Columns["NombreProducto"].HeaderText = "Producto";
+                dgvOrdenes.Columns["UnidadMedida"].HeaderText = "Unidad";
+                dgvOrdenes.Columns["Cantidad"].HeaderText = "Cantidad";
                 dgvOrdenes.Columns["PrecioUnitario"].HeaderText = "Precio Unitario";
                 dgvOrdenes.Columns["PrecioTotal"].HeaderText = "Precio Total";
 
-                if (dgvOrdenes.Columns.Contains("UsuarioID"))
-                    dgvOrdenes.Columns["UsuarioID"].Visible = false;
-
-                if (dgvOrdenes.Columns.Contains("ProductoID"))
-                    dgvOrdenes.Columns["ProductoID"].Visible = false;
-
-                if (dgvOrdenes.Columns.Contains("ProveedorID"))
-                    dgvOrdenes.Columns["ProveedorID"].Visible = false;
+                dgvOrdenes.Columns["OrdenID"].DisplayIndex = 0;
+                dgvOrdenes.Columns["UsuarioID"].DisplayIndex = 1;
+                dgvOrdenes.Columns["FechaOrden"].DisplayIndex = 2;
+                dgvOrdenes.Columns["Estado"].DisplayIndex = 3;
+                dgvOrdenes.Columns["ProveedorID"].DisplayIndex = 4;
+                dgvOrdenes.Columns["NombreProveedor"].DisplayIndex = 5;
+                dgvOrdenes.Columns["ProductoID"].DisplayIndex = 6;
+                dgvOrdenes.Columns["NombreProducto"].DisplayIndex = 7;
+                dgvOrdenes.Columns["UnidadMedida"].DisplayIndex = 8;
+                dgvOrdenes.Columns["Cantidad"].DisplayIndex = 9;
+                dgvOrdenes.Columns["PrecioUnitario"].DisplayIndex = 10;
+                dgvOrdenes.Columns["PrecioTotal"].DisplayIndex = 11;
             }
             catch (Exception ex)
             {
@@ -75,16 +93,24 @@ namespace tov_cafeteria_inventario.Vista
         {
             try
             {
-                var productos = ordenController.ObtenerProductosPorProveedor(proveedorID);
-                if (productos.Count > 0)
+                using (SqlConnection conn = new SqlConnection("Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;"))
                 {
-                    cmbProducto.DataSource = productos;
-                    cmbProducto.DisplayMember = "Nombre";
-                    cmbProducto.ValueMember = "ProductoID";
-                }
-                else
-                {
-                    MessageBox.Show("No hay productos disponibles para este proveedor.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    conn.Open();
+                    string query = @"SELECT ProductoID, Nombre, PrecioUnitario 
+                                     FROM Productos 
+                                     WHERE ProveedorID = @ProveedorID";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProveedorID", proveedorID);
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                        DataTable productosTable = new DataTable();
+                        adapter.Fill(productosTable);
+
+                        cmbProducto.DataSource = productosTable;
+                        cmbProducto.DisplayMember = "Nombre";
+                        cmbProducto.ValueMember = "ProductoID";
+                    }
                 }
             }
             catch (Exception ex)
@@ -103,6 +129,15 @@ namespace tov_cafeteria_inventario.Vista
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
+            if (cmbEstado.SelectedItem != null && cmbEstado.SelectedItem.ToString() == "Completada")
+            {
+                if (RoleID != 1)
+                {
+                    MessageBox.Show("Solo los administradores pueden registrar órdenes como 'Completada'. Debe de agregar la orden atraves de Modificar", "Permiso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 if (cmbProducto.SelectedValue == null || cmbProveedor.SelectedValue == null || cmbEstado.SelectedItem == null)
@@ -116,25 +151,6 @@ namespace tov_cafeteria_inventario.Vista
                 string estado = cmbEstado.SelectedItem.ToString();
                 DateTime fecha = dtpFechaOrden.Value;
 
-                foreach (DataGridViewRow row in dgvOrdenes.Rows)
-                {
-                    if (row.Cells["ProductoID"].Value != null &&
-                        row.Cells["ProveedorID"].Value != null &&
-                        row.Cells["UsuarioID"].Value != null)
-                    {
-                        int prod = Convert.ToInt32(row.Cells["ProductoID"].Value);
-                        int prov = Convert.ToInt32(row.Cells["ProveedorID"].Value);
-                        int user = Convert.ToInt32(row.Cells["UsuarioID"].Value);
-                        string estadoExistente = row.Cells["Estado"].Value.ToString();
-
-                        if (prod == productoID && prov == proveedorID && user == usuarioID && estadoExistente != "Cancelada")
-                        {
-                            MessageBox.Show("Ya existe una orden activa para este producto y proveedor.", "Duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
-                    }
-                }
-
                 var nuevaOrden = new Orden
                 {
                     FechaOrden = fecha,
@@ -145,6 +161,19 @@ namespace tov_cafeteria_inventario.Vista
                 };
 
                 ordenController.AgregarOrden(nuevaOrden);
+
+                if (estado == "Completada")
+                {
+                    DataRowView productoSeleccionado = cmbProducto.SelectedItem as DataRowView;
+                    if (productoSeleccionado != null)
+                    {
+                        decimal precioUnitario = Convert.ToDecimal(productoSeleccionado["PrecioUnitario"]);
+                        decimal precioTotal = precioUnitario * 1; // Cantidad 1 por defecto
+
+                        RegistrarMovimientoInventario(nuevaOrden, precioUnitario, precioTotal);
+                    }
+                }
+
                 CargarOrdenes();
                 MessageBox.Show("Orden agregada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -171,13 +200,13 @@ namespace tov_cafeteria_inventario.Vista
                 }
 
                 int ordenID = Convert.ToInt32(dgvOrdenes.SelectedRows[0].Cells["OrdenID"].Value);
-                string estadoAnterior = dgvOrdenes.SelectedRows[0].Cells["Estado"].Value.ToString();
+                string nuevoEstado = cmbEstado.SelectedItem.ToString();
 
                 var orden = new Orden
                 {
                     OrdenID = ordenID,
                     FechaOrden = dtpFechaOrden.Value,
-                    Estado = cmbEstado.SelectedItem.ToString(),
+                    Estado = nuevoEstado,
                     UsuarioID = usuarioID,
                     ProductoID = Convert.ToInt32(cmbProducto.SelectedValue),
                     ProveedorID = Convert.ToInt32(cmbProveedor.SelectedValue)
@@ -185,30 +214,13 @@ namespace tov_cafeteria_inventario.Vista
 
                 ordenController.ModificarOrden(orden);
 
-                if (estadoAnterior != "Completada" && orden.Estado == "Completada")
+                if (nuevoEstado == "Completada")
                 {
-                    using (SqlConnection conn = new SqlConnection("Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;"))
-                    {
-                        conn.Open();
-                        string query = "EXEC sp_RegistrarMovimiento @ProductoID, @TipoMovimiento, @Cantidad, @UsuarioID, @PrecioUnitario, @PrecioTotal";
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@ProductoID", orden.ProductoID);
-                            cmd.Parameters.AddWithValue("@TipoMovimiento", "Ingreso");
-                            cmd.Parameters.AddWithValue("@Cantidad", 1);
-                            cmd.Parameters.AddWithValue("@UsuarioID", orden.UsuarioID);
+                    decimal precioUnitario = Convert.ToDecimal(dgvOrdenes.SelectedRows[0].Cells["PrecioUnitario"].Value);
+                    decimal precioTotal = Convert.ToDecimal(dgvOrdenes.SelectedRows[0].Cells["PrecioTotal"].Value);
 
-                            decimal precioUnitario = Convert.ToDecimal(dgvOrdenes.SelectedRows[0].Cells["PrecioUnitario"].Value);
-                            decimal precioTotal = Convert.ToDecimal(dgvOrdenes.SelectedRows[0].Cells["PrecioTotal"].Value);
-
-                            cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
-                            cmd.Parameters.AddWithValue("@PrecioTotal", precioTotal);
-
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    RegistrarMovimientoInventario(orden, precioUnitario, precioTotal);
                 }
-
 
                 CargarOrdenes();
                 MessageBox.Show("Orden modificada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -218,6 +230,7 @@ namespace tov_cafeteria_inventario.Vista
                 MessageBox.Show("Error al modificar orden: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
@@ -275,15 +288,46 @@ namespace tov_cafeteria_inventario.Vista
             if (dgvOrdenes.SelectedRows.Count > 0)
             {
                 var fila = dgvOrdenes.SelectedRows[0];
+
+                // Asignar directamente Usuario y Fecha
+                txtUsuarioID.Text = fila.Cells["UsuarioID"].Value.ToString();
                 dtpFechaOrden.Value = Convert.ToDateTime(fila.Cells["FechaOrden"].Value);
                 cmbEstado.SelectedItem = fila.Cells["Estado"].Value.ToString();
-                txtUsuarioID.Text = fila.Cells["UsuarioID"].Value.ToString();
-                string proveedorNombre = fila.Cells["NombreProveedor"].Value.ToString();
-                cmbProveedor.SelectedIndex = cmbProveedor.FindStringExact(proveedorNombre);
-                string productoNombre = fila.Cells["NombreProducto"].Value.ToString();
-                if (cmbProducto.Items.Count > 0)
+
+                // Obtener ProveedorID y ProductoID
+                int proveedorID = Convert.ToInt32(fila.Cells["ProveedorID"].Value);
+                int productoID = Convert.ToInt32(fila.Cells["ProductoID"].Value);
+
+                // Establecer el proveedor y cargar sus productos
+                cmbProveedor.SelectedValue = proveedorID;
+                CargarProductosPorProveedor(proveedorID);
+
+                // Buscar el producto en el combo (después de cargarlo)
+                if (cmbProducto.DataSource != null)
                 {
-                    cmbProducto.SelectedIndex = cmbProducto.FindStringExact(productoNombre);
+                    cmbProducto.SelectedValue = productoID;
+                }
+            }
+        }
+
+
+        private void RegistrarMovimientoInventario(Orden orden, decimal precioUnitario, decimal precioTotal)
+        {
+            using (SqlConnection conn = new SqlConnection("Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;"))
+            {
+                conn.Open();
+                string query = "EXEC sp_RegistrarMovimiento @ProductoID, @TipoMovimiento, @Cantidad, @UsuarioID, @PrecioUnitario, @PrecioTotal";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    int cantidad = Convert.ToInt32(dgvOrdenes.SelectedRows[0].Cells["Cantidad"].Value);
+                    cmd.Parameters.AddWithValue("@Cantidad", cantidad);
+                    cmd.Parameters.AddWithValue("@ProductoID", orden.ProductoID);
+                    cmd.Parameters.AddWithValue("@TipoMovimiento", "Ingreso");
+                    cmd.Parameters.AddWithValue("@UsuarioID", orden.UsuarioID);
+                    cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
+                    cmd.Parameters.AddWithValue("@PrecioTotal", precioTotal);
+ 
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

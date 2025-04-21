@@ -14,5 +14,6 @@ namespace tov_cafeteria_inventario.Modelo
         public string Usuario { get; set; }
         public string Estado { get; set; }
         public DateTime FechaOrden { get; set; }
+        public string UnidadMedida { get; set; }
     }
 }

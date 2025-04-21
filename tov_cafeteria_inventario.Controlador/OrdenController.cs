@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using tov_cafeteria_inventario.Modelo;
 
@@ -10,50 +10,44 @@ namespace tov_cafeteria_inventario.Controlador
     {
         private readonly string connectionString = "Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;";
 
-        public List<Orden> ObtenerOrdenes()
+        public DataTable ObtenerOrdenes()
         {
-            List<Orden> ordenes = new List<Orden>();
+            DataTable dt = new DataTable();
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                connection.Open();
                 string query = @"
-            SELECT o.OrdenID, o.FechaOrden, o.Estado, o.UsuarioID,
-                   u.Usuario AS NombreUsuario,
-                   p.ProductoID, p.Nombre AS NombreProducto,
-                   pr.ProveedorID, pr.Nombre AS NombreProveedor,
-                   ISNULL(od.Precio, 0) AS PrecioUnitario,
-                   ISNULL(od.Cantidad * od.Precio, 0) AS PrecioTotal
+            SELECT 
+                o.OrdenID,
+                o.UsuarioID,
+                o.FechaOrden,
+                o.Estado,
+                o.ProveedorID,
+                pr.Nombre AS NombreProveedor,
+                o.ProductoID,
+                p.Nombre AS NombreProducto,
+                p.UnidadMedida,
+                ISNULL(od.Cantidad, 0) AS Cantidad,
+                ISNULL(od.Precio, 0) AS PrecioUnitario,
+                ISNULL(od.Precio * od.Cantidad, 0) AS PrecioTotal
             FROM Ordenes o
-            INNER JOIN Usuarios u ON o.UsuarioID = u.UsuarioID
-            INNER JOIN Productos p ON o.ProductoID = p.ProductoID
-            INNER JOIN Proveedores pr ON o.ProveedorID = pr.ProveedorID
-            LEFT JOIN OrdenDetalles od ON o.OrdenID = od.OrdenID AND od.ProductoID = p.ProductoID";
+            LEFT JOIN OrdenDetalles od ON o.OrdenID = od.OrdenID
+            JOIN Productos p ON o.ProductoID = p.ProductoID
+            JOIN Proveedores pr ON o.ProveedorID = pr.ProveedorID";
 
-                using (SqlCommand command = new SqlCommand(query, connection))
-                using (SqlDataReader reader = command.ExecuteReader())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    while (reader.Read())
-                    {
-                        ordenes.Add(new Orden
-                        {
-                            OrdenID = reader.GetInt32(0),
-                            FechaOrden = reader.GetDateTime(1),
-                            Estado = reader.GetString(2),
-                            UsuarioID = reader.GetInt32(3),
-                            ProductoID = reader.GetInt32(5),
-                            NombreProducto = reader.GetString(6),
-                            ProveedorID = reader.GetInt32(7),
-                            NombreProveedor = reader.GetString(8),
-                            PrecioUnitario = reader.GetDecimal(9),
-                            PrecioTotal = reader.GetDecimal(10)
-                        });
-                    }
+                    conn.Open();
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    adapter.Fill(dt);
                 }
             }
 
-            return ordenes;
+            return dt;
         }
+
+
+
 
         public List<Proveedor> ObtenerProveedores()
         {

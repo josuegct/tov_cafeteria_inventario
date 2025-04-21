@@ -9,33 +9,45 @@ namespace tov_cafeteria_inventario.Controlador
 {
     public class InventarioController
     {
-        private string connectionString = "Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;";
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["CafeteriaDB"].ConnectionString;
 
         public DataTable ObtenerMovimientosIndividuales()
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                string query = @"
-        SELECT 
-            i.MovimientoID,
-            i.ProductoID,
-            p.Nombre AS NombreProducto,
-            pr.ProveedorID,
-            i.TipoMovimiento,
-            i.Cantidad,
-            i.PrecioUnitario,
-            i.PrecioTotal,
-            i.FechaMovimiento
-        FROM Inventario i
-        INNER JOIN Productos p ON i.ProductoID = p.ProductoID
-        INNER JOIN Proveedores pr ON p.ProveedorID = pr.ProveedorID
-        ORDER BY i.FechaMovimiento DESC;";
+            DataTable table = new DataTable();
 
-                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-                return table;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string query = @"
+                SELECT 
+                    i.MovimientoID,
+                    i.ProductoID,
+                    ISNULL(p.Nombre, 'N/A') AS NombreProducto,
+                    ISNULL(pr.ProveedorID, 0) AS ProveedorID,
+                    ISNULL(i.UnidadMedida, 'N/A') AS UnidadMedida,
+                    i.TipoMovimiento,
+                    i.Cantidad,
+                    i.PrecioUnitario,
+                    i.PrecioTotal,
+                    i.FechaMovimiento
+                FROM Inventario i
+                LEFT JOIN Productos p ON i.ProductoID = p.ProductoID
+                LEFT JOIN Proveedores pr ON p.ProveedorID = pr.ProveedorID
+                ORDER BY i.FechaMovimiento DESC";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                    conn.Open();
+                    adapter.Fill(table);
+                }
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al cargar movimientos desde InventarioController: " + ex.Message, ex);
+            }
+            return table;
         }
 
 
@@ -61,7 +73,6 @@ namespace tov_cafeteria_inventario.Controlador
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-
                 string query = @"
                     SELECT 
                         p.ProductoID,
@@ -72,10 +83,11 @@ namespace tov_cafeteria_inventario.Controlador
                                 ELSE 0 
                             END) AS Cantidad,
                         MAX(i.FechaMovimiento) AS Fecha,
-                        'N/A' AS Usuario
+                        'N/A' AS Usuario,
+                        p.UnidadMedida
                     FROM Productos p
                     LEFT JOIN Inventario i ON p.ProductoID = i.ProductoID
-                    GROUP BY p.ProductoID, p.Nombre
+                    GROUP BY p.ProductoID, p.Nombre, p.UnidadMedida
                     HAVING SUM(CASE 
                                 WHEN i.TipoMovimiento = 'Ingreso' THEN i.Cantidad 
                                 WHEN i.TipoMovimiento = 'Salida' THEN -i.Cantidad 
@@ -94,7 +106,8 @@ namespace tov_cafeteria_inventario.Controlador
                             Producto = reader.GetString(1),
                             Cantidad = reader.GetInt32(2),
                             Fecha = reader.GetDateTime(3),
-                            Usuario = reader.GetString(4)
+                            Usuario = reader.GetString(4),
+                            UnidadMedida = reader.GetString(5)
                         });
                     }
                 }

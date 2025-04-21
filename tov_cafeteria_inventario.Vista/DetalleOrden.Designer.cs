@@ -44,6 +44,8 @@
             this.txtOrdenID = new System.Windows.Forms.TextBox();
             this.btnActualizar = new System.Windows.Forms.Button();
             this.btnModificar = new System.Windows.Forms.Button();
+            this.lblMedida = new System.Windows.Forms.Label();
+            this.cmbMedida = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOrdenDetalles)).BeginInit();
             this.SuspendLayout();
             // 
@@ -125,7 +127,7 @@
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(23, 392);
+            this.btnAgregar.Location = new System.Drawing.Point(205, 286);
             this.btnAgregar.Name = "btnAgregar";
             this.btnAgregar.Size = new System.Drawing.Size(75, 23);
             this.btnAgregar.TabIndex = 10;
@@ -135,7 +137,7 @@
             // 
             // btnEliminar
             // 
-            this.btnEliminar.Location = new System.Drawing.Point(185, 392);
+            this.btnEliminar.Location = new System.Drawing.Point(367, 286);
             this.btnEliminar.Name = "btnEliminar";
             this.btnEliminar.Size = new System.Drawing.Size(75, 23);
             this.btnEliminar.TabIndex = 11;
@@ -146,9 +148,9 @@
             // dgvOrdenDetalles
             // 
             this.dgvOrdenDetalles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvOrdenDetalles.Location = new System.Drawing.Point(23, 236);
+            this.dgvOrdenDetalles.Location = new System.Drawing.Point(23, 339);
             this.dgvOrdenDetalles.Name = "dgvOrdenDetalles";
-            this.dgvOrdenDetalles.Size = new System.Drawing.Size(500, 150);
+            this.dgvOrdenDetalles.Size = new System.Drawing.Size(500, 257);
             this.dgvOrdenDetalles.TabIndex = 12;
             // 
             // lblTitulo
@@ -184,7 +186,7 @@
             // 
             // btnActualizar
             // 
-            this.btnActualizar.Location = new System.Drawing.Point(266, 392);
+            this.btnActualizar.Location = new System.Drawing.Point(448, 286);
             this.btnActualizar.Name = "btnActualizar";
             this.btnActualizar.Size = new System.Drawing.Size(75, 23);
             this.btnActualizar.TabIndex = 10;
@@ -194,7 +196,7 @@
             // 
             // btnModificar
             // 
-            this.btnModificar.Location = new System.Drawing.Point(104, 392);
+            this.btnModificar.Location = new System.Drawing.Point(286, 286);
             this.btnModificar.Name = "btnModificar";
             this.btnModificar.Size = new System.Drawing.Size(75, 23);
             this.btnModificar.TabIndex = 13;
@@ -202,9 +204,45 @@
             this.btnModificar.UseVisualStyleBackColor = true;
             this.btnModificar.Click += new System.EventHandler(this.btnModificar_Click);
             // 
+            // lblMedida
+            // 
+            this.lblMedida.AutoSize = true;
+            this.lblMedida.Location = new System.Drawing.Point(20, 237);
+            this.lblMedida.Name = "lblMedida";
+            this.lblMedida.Size = new System.Drawing.Size(45, 13);
+            this.lblMedida.TabIndex = 14;
+            this.lblMedida.Text = "Medida:";
+            // 
+            // cmbMedida
+            // 
+            this.cmbMedida.FormattingEnabled = true;
+            this.cmbMedida.Items.AddRange(new object[] {
+            "Gramos (g)",
+            "Kilogramos (kg)",
+            "Mililitros (ml)",
+            "Litros (l)",
+            "Unidades (u)",
+            "Docenas",
+            "Porciones",
+            "Tazas",
+            "Cucharadas",
+            "Cucharaditas",
+            "Paquetes",
+            "Bolsas",
+            "Latas",
+            "Envases",
+            "Rollos",
+            "Metros"});
+            this.cmbMedida.Location = new System.Drawing.Point(167, 237);
+            this.cmbMedida.Name = "cmbMedida";
+            this.cmbMedida.Size = new System.Drawing.Size(121, 21);
+            this.cmbMedida.TabIndex = 15;
+            // 
             // DetalleOrden
             // 
-            this.ClientSize = new System.Drawing.Size(550, 450);
+            this.ClientSize = new System.Drawing.Size(547, 626);
+            this.Controls.Add(this.cmbMedida);
+            this.Controls.Add(this.lblMedida);
             this.Controls.Add(this.btnModificar);
             this.Controls.Add(this.lblTitulo);
             this.Controls.Add(this.lblOrdenID);
@@ -236,5 +274,7 @@
         private System.Windows.Forms.TextBox txtOrdenID;
         private System.Windows.Forms.Button btnActualizar;
         private System.Windows.Forms.Button btnModificar;
+        private System.Windows.Forms.Label lblMedida;
+        private System.Windows.Forms.ComboBox cmbMedida;
     }
 }

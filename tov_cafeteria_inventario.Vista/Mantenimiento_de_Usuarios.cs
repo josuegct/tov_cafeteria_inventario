@@ -54,6 +54,7 @@ namespace tov_cafeteria_inventario.Vista
                 cmbRol.Text = row.Cells["RolNombre"].Value.ToString();
                 chkActivo.Checked = Convert.ToBoolean(row.Cells["Estado"].Value);
                 txtContraseña.Clear();
+                txtConfirmarContraseña.Clear();
             }
         }
 
@@ -63,6 +64,7 @@ namespace tov_cafeteria_inventario.Vista
             txtUsuario.Clear();
             txtCorreo.Clear();
             txtContraseña.Clear();
+            txtConfirmarContraseña.Clear();
             cmbRol.SelectedIndex = -1;
             chkActivo.Checked = false;
             dgvUsuarios.ClearSelection();
@@ -72,9 +74,15 @@ namespace tov_cafeteria_inventario.Vista
         {
             try
             {
-                if (txtNombre.Text == "" || txtUsuario.Text == "" || txtCorreo.Text == "" || txtContraseña.Text == "")
+                if (txtNombre.Text == "" || txtUsuario.Text == "" || txtCorreo.Text == "" || txtContraseña.Text == "" || txtConfirmarContraseña.Text == "")
                 {
                     MessageBox.Show("Por favor, complete todos los campos.");
+                    return;
+                }
+
+                if (txtContraseña.Text != txtConfirmarContraseña.Text)
+                {
+                    MessageBox.Show("Las contraseñas no coinciden.");
                     return;
                 }
 
@@ -107,6 +115,15 @@ namespace tov_cafeteria_inventario.Vista
                 {
                     MessageBox.Show("Seleccione un usuario.");
                     return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtContraseña.Text))
+                {
+                    if (txtContraseña.Text != txtConfirmarContraseña.Text)
+                    {
+                        MessageBox.Show("Las contraseñas no coinciden.");
+                        return;
+                    }
                 }
 
                 int id = Convert.ToInt32(dgvUsuarios.SelectedRows[0].Cells["UsuarioID"].Value);
@@ -167,6 +184,11 @@ namespace tov_cafeteria_inventario.Vista
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             LimpiarCampos();
+        }
+
+        private void Mantenimiento_de_Usuarios_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

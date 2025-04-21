@@ -20,7 +20,6 @@ namespace tov_cafeteria_inventario.Vista
         private AcercaDe acercaDeForm;
         private Ayuda ayudaForm;
 
-        
         public Pantalla_Principal(int usuarioID)
         {
             InitializeComponent();
@@ -30,6 +29,18 @@ namespace tov_cafeteria_inventario.Vista
             this.roleID = controller.ObtenerRoleID(usuarioID);
         }
 
+        private void Pantalla_Principal_Load(object sender, EventArgs e)
+        {
+            // Deshabilitar acceso a formularios de administración si no es administrador
+            if (this.roleID != 1)
+            {
+                bitacorasToolStripMenuItem.Enabled = false;
+                mantenimientoToolStripMenuItem.Enabled = false;
+                reportesToolStripMenuItem.Enabled = false;
+                inventarioToolStripMenuItem.Enabled = false;
+            }
+        }
+
         private void ordenesToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             this.ordenesForm = new Ordenes(this.usuarioID);
@@ -37,21 +48,28 @@ namespace tov_cafeteria_inventario.Vista
             this.ordenesForm.Show();
         }
 
-        private void Pantalla_Principal_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void inventarioToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder al Inventario.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             this.inventarioForm = new Inventario(this.usuarioID);
             this.inventarioForm.MdiParent = this;
-            this.inventarioForm.StartPosition = FormStartPosition.CenterScreen; // <- Esta línea es clave
+            this.inventarioForm.StartPosition = FormStartPosition.CenterScreen;
             this.inventarioForm.Show();
         }
 
         private void mantenimientoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder a Mantenimientos.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             this.mantenimientosForm = new Mantenimientos(this.usuarioID);
             this.mantenimientosForm.MdiParent = this;
             this.mantenimientosForm.Show();
@@ -59,13 +77,25 @@ namespace tov_cafeteria_inventario.Vista
 
         private void reportesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder a Reportes.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             this.reportesForm = new Reportes(usuarioID);
-            this.reportesForm.MdiParent = this; // Pantalla_Principal es el contenedor MDI
+            this.reportesForm.MdiParent = this;
             this.reportesForm.Show();
         }
 
         private void bitacorasToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder a la bitácora.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             this.bitacoraForm = new Bitacora(this.usuarioID);
             this.bitacoraForm.MdiParent = this;
             this.bitacoraForm.Show();
@@ -88,8 +118,6 @@ namespace tov_cafeteria_inventario.Vista
 
     internal class InventarioForm : Inventario
     {
-        public InventarioForm(int usuarioID) : base(usuarioID)
-        {
-        }
+        public InventarioForm(int usuarioID) : base(usuarioID) { }
     }
 }

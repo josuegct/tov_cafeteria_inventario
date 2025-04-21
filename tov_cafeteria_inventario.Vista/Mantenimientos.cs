@@ -8,11 +8,20 @@ namespace tov_cafeteria_inventario.Vista
     public partial class Mantenimientos : Form
     {
         private int usuarioID;
+        private readonly UsuarioController usuarioController = new UsuarioController();
 
         public Mantenimientos(int usuarioID)
         {
             InitializeComponent();
             this.usuarioID = usuarioID;
+
+            // Validación de permiso (solo RoleID = 1)
+            int roleID = usuarioController.ObtenerRoleID(usuarioID);
+            if (roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder al módulo de Mantenimientos.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
         }
 
         private void Mantenimientos_Load(object sender, EventArgs e)

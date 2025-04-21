@@ -11,6 +11,7 @@ namespace tov_cafeteria_inventario.Vista
     public partial class Reporte_de_Ingresos_y_Salidas_al_Sistema : Form
     {
         private readonly Reporte_Ingreso_SalidaController reporteController = new Reporte_Ingreso_SalidaController();
+        private readonly UsuarioController usuarioController = new UsuarioController();
         private readonly int usuarioID;
 
         public Reporte_de_Ingresos_y_Salidas_al_Sistema(int usuarioID)
@@ -18,6 +19,14 @@ namespace tov_cafeteria_inventario.Vista
             InitializeComponent();
             this.usuarioID = usuarioID;
             this.FormClosed += Reporte_de_Ingresos_FormClosed;
+
+            // Validar si el usuario es administrador
+            int roleID = usuarioController.ObtenerRoleID(usuarioID);
+            if (roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder a este reporte.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
         }
 
         private void Reporte_de_Movimientos_FormClosed(object sender, FormClosedEventArgs e)

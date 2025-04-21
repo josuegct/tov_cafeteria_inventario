@@ -30,6 +30,7 @@ namespace tov_cafeteria_inventario.Vista
 
             CargarCabeceraDeOrden();
             CargarDetalles();
+            CargarUnidadesMedida();
 
             dgvOrdenDetalles.ReadOnly = true;
             dgvOrdenDetalles.AllowUserToAddRows = false;
@@ -123,7 +124,9 @@ namespace tov_cafeteria_inventario.Vista
                             od.OrdenDetalleID,
                             p.Nombre AS Producto,
                             od.Cantidad,
-                            od.Precio
+                            od.UnidadMedida,
+                            od.Precio,
+                            (od.Precio * od.Cantidad) AS PrecioTotal
                         FROM OrdenDetalles od
                         INNER JOIN Productos p ON od.ProductoID = p.ProductoID
                         WHERE od.OrdenID = @OrdenID";
@@ -140,6 +143,9 @@ namespace tov_cafeteria_inventario.Vista
 
                             if (dgvOrdenDetalles.Columns.Contains("OrdenDetalleID"))
                                 dgvOrdenDetalles.Columns["OrdenDetalleID"].Visible = false;
+
+                            if (dgvOrdenDetalles.Columns.Contains("UnidadMedida"))
+                                dgvOrdenDetalles.Columns["UnidadMedida"].HeaderText = "Unidad";
                         }
                     }
                 }
@@ -148,6 +154,13 @@ namespace tov_cafeteria_inventario.Vista
             {
                 MessageBox.Show("Error al cargar detalles: " + ex.Message);
             }
+        }
+
+        private void CargarUnidadesMedida()
+        {
+            cmbMedida.Items.Clear();
+            cmbMedida.Items.AddRange(new string[] { "kg", "g", "l", "ml", "unidad", "mm" });
+            cmbMedida.SelectedIndex = 0;
         }
 
         private void btnActualizar_Click(object sender, EventArgs e)
@@ -167,21 +180,35 @@ namespace tov_cafeteria_inventario.Vista
 
                 int cantidad = Convert.ToInt32(txtCantidad.Text);
                 decimal precioUnitario = Convert.ToDecimal(txtPrecio.Text);
+                string unidadMedida = cmbMedida.SelectedItem?.ToString() ?? "unidad";
+                int productoID = GetProductoIDFromName(productoNombre);
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
+
+                    // Insertar en OrdenDetalles
                     string query = @"
-                INSERT INTO OrdenDetalles (OrdenID, ProductoID, Cantidad, Precio)
-                VALUES (@OrdenID, @ProductoID, @Cantidad, @Precio)";
+                INSERT INTO OrdenDetalles (OrdenID, ProductoID, Cantidad, Precio, UnidadMedida)
+                VALUES (@OrdenID, @ProductoID, @Cantidad, @Precio, @UnidadMedida)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@OrdenID", ordenID);
-                        command.Parameters.AddWithValue("@ProductoID", GetProductoIDFromName(productoNombre));
+                        command.Parameters.AddWithValue("@ProductoID", productoID);
                         command.Parameters.AddWithValue("@Cantidad", cantidad);
-                        command.Parameters.AddWithValue("@Precio", precioUnitario); // Guardamos precio UNITARIO aquí
+                        command.Parameters.AddWithValue("@Precio", precioUnitario);
+                        command.Parameters.AddWithValue("@UnidadMedida", unidadMedida);
                         command.ExecuteNonQuery();
+                    }
+
+                    // Actualizar UnidadMedida del producto en tabla Productos
+                    string updateUnidad = "UPDATE Productos SET UnidadMedida = @UnidadMedida WHERE ProductoID = @ProductoID";
+                    using (SqlCommand updateCmd = new SqlCommand(updateUnidad, connection))
+                    {
+                        updateCmd.Parameters.AddWithValue("@UnidadMedida", unidadMedida);
+                        updateCmd.Parameters.AddWithValue("@ProductoID", productoID);
+                        updateCmd.ExecuteNonQuery();
                     }
                 }
 
@@ -238,20 +265,21 @@ namespace tov_cafeteria_inventario.Vista
                     int detalleID = Convert.ToInt32(dgvOrdenDetalles.SelectedRows[0].Cells["OrdenDetalleID"].Value);
                     int cantidad = Convert.ToInt32(txtCantidad.Text);
                     decimal precioUnitario = Convert.ToDecimal(txtPrecio.Text);
-                    decimal precioTotal = cantidad * precioUnitario;
+                    string unidadMedida = cmbMedida.SelectedItem?.ToString() ?? "unidad";
 
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
                         connection.Open();
                         string query = @"
                             UPDATE OrdenDetalles
-                            SET Cantidad = @Cantidad, Precio = @Precio
+                            SET Cantidad = @Cantidad, Precio = @Precio, UnidadMedida = @UnidadMedida
                             WHERE OrdenDetalleID = @OrdenDetalleID";
 
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
                             command.Parameters.AddWithValue("@Cantidad", cantidad);
                             command.Parameters.AddWithValue("@Precio", precioUnitario);
+                            command.Parameters.AddWithValue("@UnidadMedida", unidadMedida);
                             command.Parameters.AddWithValue("@OrdenDetalleID", detalleID);
                             command.ExecuteNonQuery();
                         }

@@ -10,9 +10,6 @@
         private System.Windows.Forms.Label lbl_correo;
         private System.Windows.Forms.Label lbl_direccion;
         private System.Windows.Forms.TextBox txt_nombre;
-        private System.Windows.Forms.TextBox txt_cedula;
-        private System.Windows.Forms.TextBox txt_telefono;
-        private System.Windows.Forms.TextBox txt_correo;
         private System.Windows.Forms.TextBox txt_direccion;
         private System.Windows.Forms.Button btn_agregar;
         private System.Windows.Forms.Button btn_modificar;
@@ -36,9 +33,6 @@
             this.lbl_correo = new System.Windows.Forms.Label();
             this.lbl_direccion = new System.Windows.Forms.Label();
             this.txt_nombre = new System.Windows.Forms.TextBox();
-            this.txt_cedula = new System.Windows.Forms.TextBox();
-            this.txt_telefono = new System.Windows.Forms.TextBox();
-            this.txt_correo = new System.Windows.Forms.TextBox();
             this.txt_direccion = new System.Windows.Forms.TextBox();
             this.btn_agregar = new System.Windows.Forms.Button();
             this.btn_modificar = new System.Windows.Forms.Button();
@@ -47,6 +41,9 @@
             this.dataGridViewProveedores = new System.Windows.Forms.DataGridView();
             this.lblProductos = new System.Windows.Forms.Label();
             this.txtProductList = new System.Windows.Forms.TextBox();
+            this.mtbCedula = new System.Windows.Forms.MaskedTextBox();
+            this.mtbTelefono = new System.Windows.Forms.MaskedTextBox();
+            this.txtCorreo = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProveedores)).BeginInit();
             this.SuspendLayout();
             // 
@@ -111,27 +108,6 @@
             this.txt_nombre.Name = "txt_nombre";
             this.txt_nombre.Size = new System.Drawing.Size(200, 20);
             this.txt_nombre.TabIndex = 6;
-            // 
-            // txt_cedula
-            // 
-            this.txt_cedula.Location = new System.Drawing.Point(83, 99);
-            this.txt_cedula.Name = "txt_cedula";
-            this.txt_cedula.Size = new System.Drawing.Size(200, 20);
-            this.txt_cedula.TabIndex = 7;
-            // 
-            // txt_telefono
-            // 
-            this.txt_telefono.Location = new System.Drawing.Point(83, 129);
-            this.txt_telefono.Name = "txt_telefono";
-            this.txt_telefono.Size = new System.Drawing.Size(200, 20);
-            this.txt_telefono.TabIndex = 8;
-            // 
-            // txt_correo
-            // 
-            this.txt_correo.Location = new System.Drawing.Point(83, 159);
-            this.txt_correo.Name = "txt_correo";
-            this.txt_correo.Size = new System.Drawing.Size(200, 20);
-            this.txt_correo.TabIndex = 9;
             // 
             // txt_direccion
             // 
@@ -202,9 +178,35 @@
             this.txtProductList.Size = new System.Drawing.Size(159, 176);
             this.txtProductList.TabIndex = 10;
             // 
+            // mtbCedula
+            // 
+            this.mtbCedula.Location = new System.Drawing.Point(83, 99);
+            this.mtbCedula.Mask = "0-000-000000";
+            this.mtbCedula.Name = "mtbCedula";
+            this.mtbCedula.Size = new System.Drawing.Size(200, 20);
+            this.mtbCedula.TabIndex = 18;
+            // 
+            // mtbTelefono
+            // 
+            this.mtbTelefono.Location = new System.Drawing.Point(83, 129);
+            this.mtbTelefono.Mask = "0000-0000";
+            this.mtbTelefono.Name = "mtbTelefono";
+            this.mtbTelefono.Size = new System.Drawing.Size(200, 20);
+            this.mtbTelefono.TabIndex = 19;
+            // 
+            // txtCorreo
+            // 
+            this.txtCorreo.Location = new System.Drawing.Point(83, 159);
+            this.txtCorreo.Name = "txtCorreo";
+            this.txtCorreo.Size = new System.Drawing.Size(200, 20);
+            this.txtCorreo.TabIndex = 20;
+            // 
             // Mantenimiento_de_Proveedores
             // 
             this.ClientSize = new System.Drawing.Size(642, 599);
+            this.Controls.Add(this.txtCorreo);
+            this.Controls.Add(this.mtbTelefono);
+            this.Controls.Add(this.mtbCedula);
             this.Controls.Add(this.lblProductos);
             this.Controls.Add(this.lbl_titulo);
             this.Controls.Add(this.lbl_nombre);
@@ -213,9 +215,6 @@
             this.Controls.Add(this.lbl_correo);
             this.Controls.Add(this.lbl_direccion);
             this.Controls.Add(this.txt_nombre);
-            this.Controls.Add(this.txt_cedula);
-            this.Controls.Add(this.txt_telefono);
-            this.Controls.Add(this.txt_correo);
             this.Controls.Add(this.txtProductList);
             this.Controls.Add(this.txt_direccion);
             this.Controls.Add(this.btn_agregar);
@@ -234,5 +233,8 @@
 
         private System.Windows.Forms.Label lblProductos;
         private System.Windows.Forms.TextBox txtProductList;
+        private System.Windows.Forms.MaskedTextBox mtbCedula;
+        private System.Windows.Forms.MaskedTextBox mtbTelefono;
+        private System.Windows.Forms.TextBox txtCorreo;
     }
 }

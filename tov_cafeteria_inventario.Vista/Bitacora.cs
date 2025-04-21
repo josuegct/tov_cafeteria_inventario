@@ -11,18 +11,25 @@ namespace tov_cafeteria_inventario.Vista
     public partial class Bitacora : Form
     {
         private readonly BitacoraController bitacoraController = new BitacoraController();
+        private readonly UsuarioController usuarioController = new UsuarioController();
         private int usuarioID;
 
         public Bitacora(int usuarioID)
         {
             InitializeComponent();
             this.usuarioID = usuarioID;
+
+            int roleID = usuarioController.ObtenerRoleID(usuarioID);
+            if (roleID != 1)
+            {
+                MessageBox.Show("No tiene permisos para acceder a la Bitácora.", "Acceso denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+            }
         }
 
         private void Bitacora_Load(object sender, EventArgs e)
         {
             CargarBitacora();
-
         }
 
         private void btn_reporteIngresoSalida_Click(object sender, EventArgs e)
@@ -59,7 +66,6 @@ namespace tov_cafeteria_inventario.Vista
                 {
                     table.Rows.Add(registro.BitacoraID, registro.UsuarioID, registro.FechaRegistro, registro.Accion);
                 }
-
             }
             catch (Exception ex)
             {
