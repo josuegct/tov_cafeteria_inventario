@@ -71,8 +71,7 @@
             "Ingreso",
             "Salida",
             "Ajuste",
-            "Devolucion",
-            "Correccion"});
+            "Devolucion"});
             this.cmbTipoMovimiento.Location = new System.Drawing.Point(118, 180);
             this.cmbTipoMovimiento.Name = "cmbTipoMovimiento";
             this.cmbTipoMovimiento.Size = new System.Drawing.Size(237, 21);
@@ -184,7 +183,7 @@
             // 
             this.lblTitulo.AutoSize = true;
             this.lblTitulo.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTitulo.Location = new System.Drawing.Point(292, 31);
+            this.lblTitulo.Location = new System.Drawing.Point(464, 18);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(208, 22);
             this.lblTitulo.TabIndex = 11;
@@ -259,7 +258,6 @@
             this.cmbUnidadMedida.Name = "cmbUnidadMedida";
             this.cmbUnidadMedida.Size = new System.Drawing.Size(237, 21);
             this.cmbUnidadMedida.TabIndex = 17;
-            this.cmbUnidadMedida.SelectedIndexChanged += new System.EventHandler(this.cmbUnidadMedida_SelectedIndexChanged);
             // 
             // Inventario
             // 

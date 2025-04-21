@@ -29,7 +29,9 @@ namespace tov_cafeteria_inventario.Vista
             dgvOrdenes.AllowUserToAddRows = false;
             dgvOrdenes.ReadOnly = true;
 
-            cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso", "Completada" });
+            //cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso", "Completada" });
+            cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso" });
+
             CargarProveedores();
             CargarOrdenes();
         }
@@ -287,49 +289,65 @@ namespace tov_cafeteria_inventario.Vista
         {
             if (dgvOrdenes.SelectedRows.Count > 0)
             {
+                // Asegura que la opción "Completada" esté disponible
+                if (!cmbEstado.Items.Contains("Completada"))
+                {
+                    cmbEstado.Items.Add("Completada");
+                }
+
                 var fila = dgvOrdenes.SelectedRows[0];
 
-                // Asignar directamente Usuario y Fecha
                 txtUsuarioID.Text = fila.Cells["UsuarioID"].Value.ToString();
                 dtpFechaOrden.Value = Convert.ToDateTime(fila.Cells["FechaOrden"].Value);
                 cmbEstado.SelectedItem = fila.Cells["Estado"].Value.ToString();
 
-                // Obtener ProveedorID y ProductoID
                 int proveedorID = Convert.ToInt32(fila.Cells["ProveedorID"].Value);
                 int productoID = Convert.ToInt32(fila.Cells["ProductoID"].Value);
 
-                // Establecer el proveedor y cargar sus productos
                 cmbProveedor.SelectedValue = proveedorID;
                 CargarProductosPorProveedor(proveedorID);
 
-                // Buscar el producto en el combo (después de cargarlo)
                 if (cmbProducto.DataSource != null)
                 {
                     cmbProducto.SelectedValue = productoID;
                 }
             }
+            else
+            {
+                // Si se deselecciona todo, se quita la opción "Completada"
+                if (cmbEstado.Items.Contains("Completada"))
+                {
+                    cmbEstado.Items.Remove("Completada");
+                }
+                cmbEstado.SelectedIndex = -1;
+            }
         }
-
 
         private void RegistrarMovimientoInventario(Orden orden, decimal precioUnitario, decimal precioTotal)
         {
             using (SqlConnection conn = new SqlConnection("Server=DESKTOP-M9AEQR3\\SQLEXPRESS;Database=CafeteriaDB;Integrated Security=True;"))
             {
                 conn.Open();
-                string query = "EXEC sp_RegistrarMovimiento @ProductoID, @TipoMovimiento, @Cantidad, @UsuarioID, @PrecioUnitario, @PrecioTotal";
+                string query = "EXEC sp_RegistrarMovimiento @ProductoID, @TipoMovimiento, @Cantidad, @UsuarioID, @PrecioUnitario, @PrecioTotal, @UnidadMedida";
+
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     int cantidad = Convert.ToInt32(dgvOrdenes.SelectedRows[0].Cells["Cantidad"].Value);
-                    cmd.Parameters.AddWithValue("@Cantidad", cantidad);
+
+                    string unidadMedida = dgvOrdenes.SelectedRows[0].Cells["UnidadMedida"].Value?.ToString() ?? "N/A";
+
                     cmd.Parameters.AddWithValue("@ProductoID", orden.ProductoID);
                     cmd.Parameters.AddWithValue("@TipoMovimiento", "Ingreso");
+                    cmd.Parameters.AddWithValue("@Cantidad", cantidad);
                     cmd.Parameters.AddWithValue("@UsuarioID", orden.UsuarioID);
                     cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
                     cmd.Parameters.AddWithValue("@PrecioTotal", precioTotal);
- 
+                    cmd.Parameters.AddWithValue("@UnidadMedida", unidadMedida);
+
                     cmd.ExecuteNonQuery();
                 }
             }
         }
+
     }
 }

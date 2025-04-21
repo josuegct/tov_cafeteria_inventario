@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitacoraController.cs" />
+    <Compile Include="ExistenciasController.cs" />
     <Compile Include="InventarioController.cs" />
     <Compile Include="LoginController.cs" />
     <Compile Include="OrdenController.cs" />

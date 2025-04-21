@@ -87,6 +87,12 @@
     <Compile Include="DetalleOrden.Designer.cs">
       <DependentUpon>DetalleOrden.cs</DependentUpon>
     </Compile>
+    <Compile Include="Existencias.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Existencias.Designer.cs">
+      <DependentUpon>Existencias.cs</DependentUpon>
+    </Compile>
     <Compile Include="Inventario.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -184,6 +190,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DetalleOrden.resx">
       <DependentUpon>DetalleOrden.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Existencias.resx">
+      <DependentUpon>Existencias.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Inventario.resx">
       <DependentUpon>Inventario.cs</DependentUpon>

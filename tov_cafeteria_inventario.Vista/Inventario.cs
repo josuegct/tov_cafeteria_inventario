@@ -31,6 +31,11 @@ namespace tov_cafeteria_inventario.Vista
                 return;
             }
 
+            cmbUnidadMedida.Items.AddRange(new string[]
+            {
+        "kg", "g", "l", "ml", "unidad"
+            });
+
             dgvInventario.AllowUserToAddRows = false;
             dgvInventario.AutoGenerateColumns = true;
 
@@ -46,6 +51,7 @@ namespace tov_cafeteria_inventario.Vista
             txtCantidad.TextChanged += CalcularPrecioTotal;
             txtPrecioUnitario.TextChanged += CalcularPrecioTotal;
         }
+
 
         private void CargarMovimientos()
         {
