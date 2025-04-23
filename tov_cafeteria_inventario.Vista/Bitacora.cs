@@ -10,10 +10,12 @@ namespace tov_cafeteria_inventario.Vista
 {
     public partial class Bitacora : Form
     {
+        // ----------------- Controladores y estado -----------------
         private readonly BitacoraController bitacoraController = new BitacoraController();
         private readonly UsuarioController usuarioController = new UsuarioController();
         private int usuarioID;
 
+        // ----------------- Constructor -----------------
         public Bitacora(int usuarioID)
         {
             InitializeComponent();
@@ -27,6 +29,7 @@ namespace tov_cafeteria_inventario.Vista
             }
         }
 
+        // ----------------- Eventos del Formulario -----------------
         private void Bitacora_Load(object sender, EventArgs e)
         {
             CargarBitacora();
@@ -50,6 +53,7 @@ namespace tov_cafeteria_inventario.Vista
             this.Close();
         }
 
+        // ----------------- Lógica de Carga de Datos -----------------
         private void CargarBitacora(string filtro = "")
         {
             try
@@ -66,6 +70,9 @@ namespace tov_cafeteria_inventario.Vista
                 {
                     table.Rows.Add(registro.BitacoraID, registro.UsuarioID, registro.FechaRegistro, registro.Accion);
                 }
+
+                // Falta asignación si se usa un DataGridView:
+                // dgvBitacora.DataSource = table;
             }
             catch (Exception ex)
             {

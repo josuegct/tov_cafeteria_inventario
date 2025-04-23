@@ -81,5 +81,35 @@ namespace tov_cafeteria_inventario.Controlador
                 }
             }
         }
+        public List<Rol> BuscarRoles(string filtro)
+        {
+            var lista = new List<Rol>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = @"
+            SELECT RoleID, NombreRol, Descripcion
+            FROM Roles
+            WHERE NombreRol LIKE @filtro OR Descripcion LIKE @filtro";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    lista.Add(new Rol
+                    {
+                        RoleID = Convert.ToInt32(reader["RoleID"]),
+                        NombreRol = reader["NombreRol"].ToString(),
+                        Descripcion = reader["Descripcion"].ToString()
+                    });
+                }
+
+                conn.Close();
+            }
+            return lista;
+        }
     }
 }

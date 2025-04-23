@@ -19,7 +19,7 @@ namespace tov_cafeteria_inventario.Controlador
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT UsuarioID, PasswordHash, RoleID FROM Usuarios WHERE Usuario = @Usuario AND Estado = 1";
+                    string query = "SELECT UsuarioID, PasswordHash, RoleID FROM Usuarios WHERE Usuario = @Usuario AND Estado = 'Activo'";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@Usuario", usuario);

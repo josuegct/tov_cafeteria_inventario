@@ -8,7 +8,7 @@
         public string Correo { get; set; }
         public int RoleID { get; set; }
         public string RolNombre { get; set; }
-        public bool Estado { get; set; }
+        public string Estado { get; set; }
         public byte[] PasswordHash { get; set; }
     }
 }

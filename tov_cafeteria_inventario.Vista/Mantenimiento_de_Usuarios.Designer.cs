@@ -19,10 +19,10 @@ namespace tov_cafeteria_inventario.Vista
         private System.Windows.Forms.TextBox txtConfirmarContraseña;
         private System.Windows.Forms.ComboBox cmbRol;
         private System.Windows.Forms.CheckBox chkActivo;
-        private System.Windows.Forms.Button btnAgregar;
+        private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnModificar;
         private System.Windows.Forms.Button btnEliminar;
-        private System.Windows.Forms.Button btnLimpiar;
+        private System.Windows.Forms.Button btnNuevo;
         private System.Windows.Forms.DataGridView dgvUsuarios;
 
         protected override void Dispose(bool disposing)
@@ -50,11 +50,14 @@ namespace tov_cafeteria_inventario.Vista
             this.txtConfirmarContraseña = new System.Windows.Forms.TextBox();
             this.cmbRol = new System.Windows.Forms.ComboBox();
             this.chkActivo = new System.Windows.Forms.CheckBox();
-            this.btnAgregar = new System.Windows.Forms.Button();
+            this.btnGuardar = new System.Windows.Forms.Button();
             this.btnModificar = new System.Windows.Forms.Button();
             this.btnEliminar = new System.Windows.Forms.Button();
-            this.btnLimpiar = new System.Windows.Forms.Button();
+            this.btnNuevo = new System.Windows.Forms.Button();
             this.dgvUsuarios = new System.Windows.Forms.DataGridView();
+            this.btnBuscar = new System.Windows.Forms.Button();
+            this.txtBuscar = new System.Windows.Forms.TextBox();
+            this.btnActualizar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).BeginInit();
             this.SuspendLayout();
             // 
@@ -136,20 +139,6 @@ namespace tov_cafeteria_inventario.Vista
             this.txtCorreo.Size = new System.Drawing.Size(280, 20);
             this.txtCorreo.TabIndex = 9;
             // 
-            // cmbRol
-            // 
-            this.cmbRol.Location = new System.Drawing.Point(152, 140);
-            this.cmbRol.Name = "cmbRol";
-            this.cmbRol.Size = new System.Drawing.Size(280, 21);
-            this.cmbRol.TabIndex = 10;
-            // 
-            // chkActivo
-            // 
-            this.chkActivo.Location = new System.Drawing.Point(152, 180);
-            this.chkActivo.Name = "chkActivo";
-            this.chkActivo.Size = new System.Drawing.Size(31, 24);
-            this.chkActivo.TabIndex = 11;
-            // 
             // txtContraseña
             // 
             this.txtContraseña.Location = new System.Drawing.Point(152, 220);
@@ -166,14 +155,28 @@ namespace tov_cafeteria_inventario.Vista
             this.txtConfirmarContraseña.Size = new System.Drawing.Size(280, 20);
             this.txtConfirmarContraseña.TabIndex = 13;
             // 
-            // btnAgregar
+            // cmbRol
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(586, 20);
-            this.btnAgregar.Name = "btnAgregar";
-            this.btnAgregar.Size = new System.Drawing.Size(150, 23);
-            this.btnAgregar.TabIndex = 14;
-            this.btnAgregar.Text = "Agregar";
-            this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
+            this.cmbRol.Location = new System.Drawing.Point(152, 140);
+            this.cmbRol.Name = "cmbRol";
+            this.cmbRol.Size = new System.Drawing.Size(280, 21);
+            this.cmbRol.TabIndex = 10;
+            // 
+            // chkActivo
+            // 
+            this.chkActivo.Location = new System.Drawing.Point(152, 180);
+            this.chkActivo.Name = "chkActivo";
+            this.chkActivo.Size = new System.Drawing.Size(31, 24);
+            this.chkActivo.TabIndex = 11;
+            // 
+            // btnGuardar
+            // 
+            this.btnGuardar.Location = new System.Drawing.Point(586, 20);
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Size = new System.Drawing.Size(150, 23);
+            this.btnGuardar.TabIndex = 14;
+            this.btnGuardar.Text = "Guardar";
+            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             // 
             // btnModificar
             // 
@@ -193,30 +196,60 @@ namespace tov_cafeteria_inventario.Vista
             this.btnEliminar.Text = "Eliminar";
             this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
             // 
-            // btnLimpiar
+            // btnNuevo
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(586, 140);
-            this.btnLimpiar.Name = "btnLimpiar";
-            this.btnLimpiar.Size = new System.Drawing.Size(150, 23);
-            this.btnLimpiar.TabIndex = 17;
-            this.btnLimpiar.Text = "Limpiar";
-            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
+            this.btnNuevo.Location = new System.Drawing.Point(586, 140);
+            this.btnNuevo.Name = "btnNuevo";
+            this.btnNuevo.Size = new System.Drawing.Size(150, 23);
+            this.btnNuevo.TabIndex = 17;
+            this.btnNuevo.Text = "Nuevo";
+            this.btnNuevo.Click += new System.EventHandler(this.btnLimpiar_Click);
             // 
             // dgvUsuarios
             // 
-            this.dgvUsuarios.Location = new System.Drawing.Point(20, 300);
+            this.dgvUsuarios.Location = new System.Drawing.Point(23, 360);
             this.dgvUsuarios.Name = "dgvUsuarios";
-            this.dgvUsuarios.Size = new System.Drawing.Size(716, 222);
+            this.dgvUsuarios.Size = new System.Drawing.Size(713, 256);
             this.dgvUsuarios.TabIndex = 18;
+            // 
+            // btnBuscar
+            // 
+            this.btnBuscar.Location = new System.Drawing.Point(580, 328);
+            this.btnBuscar.Name = "btnBuscar";
+            this.btnBuscar.Size = new System.Drawing.Size(75, 23);
+            this.btnBuscar.TabIndex = 19;
+            this.btnBuscar.Text = "BUSCAR";
+            this.btnBuscar.UseVisualStyleBackColor = true;
+            this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
+            // 
+            // txtBuscar
+            // 
+            this.txtBuscar.Location = new System.Drawing.Point(23, 331);
+            this.txtBuscar.Name = "txtBuscar";
+            this.txtBuscar.Size = new System.Drawing.Size(551, 20);
+            this.txtBuscar.TabIndex = 20;
+            // 
+            // btnActualizar
+            // 
+            this.btnActualizar.Location = new System.Drawing.Point(661, 328);
+            this.btnActualizar.Name = "btnActualizar";
+            this.btnActualizar.Size = new System.Drawing.Size(75, 23);
+            this.btnActualizar.TabIndex = 21;
+            this.btnActualizar.Text = "Refrescar";
+            this.btnActualizar.UseVisualStyleBackColor = true;
+            this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
             // 
             // Mantenimiento_de_Usuarios
             // 
-            this.ClientSize = new System.Drawing.Size(755, 553);
+            this.ClientSize = new System.Drawing.Size(755, 639);
+            this.Controls.Add(this.btnActualizar);
+            this.Controls.Add(this.txtBuscar);
+            this.Controls.Add(this.btnBuscar);
             this.Controls.Add(this.dgvUsuarios);
-            this.Controls.Add(this.btnLimpiar);
+            this.Controls.Add(this.btnNuevo);
             this.Controls.Add(this.btnEliminar);
             this.Controls.Add(this.btnModificar);
-            this.Controls.Add(this.btnAgregar);
+            this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.txtConfirmarContraseña);
             this.Controls.Add(this.txtContraseña);
             this.Controls.Add(this.chkActivo);
@@ -237,6 +270,11 @@ namespace tov_cafeteria_inventario.Vista
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsuarios)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
+
+        private Button btnBuscar;
+        private TextBox txtBuscar;
+        private Button btnActualizar;
     }
 }

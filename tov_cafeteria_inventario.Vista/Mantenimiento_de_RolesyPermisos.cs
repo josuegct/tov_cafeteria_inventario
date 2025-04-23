@@ -17,7 +17,6 @@ namespace tov_cafeteria_inventario.Vista
             this.FormClosed += Mantenimiento_de_RolesyPermisos_FormClosed;
             this.Load += Mantenimiento_de_RolesyPermisos_Load;
 
-            // Asegura que el evento se asocie
             dataGridViewRoles.SelectionChanged += dataGridViewRoles_SelectionChanged;
         }
 
@@ -41,7 +40,6 @@ namespace tov_cafeteria_inventario.Vista
                 var roles = rolController.ObtenerRoles();
                 dataGridViewRoles.DataSource = roles;
 
-                // Opcional: desactiva edición directa
                 dataGridViewRoles.ReadOnly = true;
                 dataGridViewRoles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dataGridViewRoles.MultiSelect = false;
@@ -50,33 +48,6 @@ namespace tov_cafeteria_inventario.Vista
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar los roles: " + ex.Message);
-            }
-        }
-
-        private void btn_agregar_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txt_nombreRol.Text) || string.IsNullOrWhiteSpace(txt_descripcion.Text))
-            {
-                MessageBox.Show("Todos los campos son obligatorios.");
-                return;
-            }
-
-            Rol nuevoRol = new Rol
-            {
-                NombreRol = txt_nombreRol.Text,
-                Descripcion = txt_descripcion.Text
-            };
-
-            try
-            {
-                rolController.AgregarRol(nuevoRol);
-                MessageBox.Show("Rol agregado correctamente.\n\nIMPORTANTE: Contacte al desarrollador para aplicar restricciones de módulos si es necesario.");
-                CargarRoles();
-                LimpiarCampos();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al agregar el rol: " + ex.Message);
             }
         }
 
@@ -155,6 +126,72 @@ namespace tov_cafeteria_inventario.Vista
             txt_nombreRol.Clear();
             txt_descripcion.Clear();
             dataGridViewRoles.ClearSelection();
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+            "Rol agregado correctamente.\n\n⚠️ Contacte al administrador del sistema para asignar permisos de módulos.",
+            "Rol guardado",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+);
+            if (string.IsNullOrWhiteSpace(txt_nombreRol.Text) || string.IsNullOrWhiteSpace(txt_descripcion.Text))
+            {
+                MessageBox.Show("Todos los campos son obligatorios.");
+                return;
+            }
+
+            Rol nuevoRol = new Rol
+            {
+                NombreRol = txt_nombreRol.Text,
+                Descripcion = txt_descripcion.Text
+            };
+
+            try
+            {
+                rolController.AgregarRol(nuevoRol);
+                MessageBox.Show("Rol agregado correctamente.\n\nIMPORTANTE: Contacte al desarrollador para aplicar restricciones de módulos si es necesario.");
+                CargarRoles();
+                LimpiarCampos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al agregar el rol: " + ex.Message);
+            }
+        }
+
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+            LimpiarCampos();
+            txt_nombreRol.Focus();
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(filtro))
+            {
+                CargarRoles(); // Si no hay texto, carga todos
+            }
+            else
+            {
+                try
+                {
+                    var resultado = rolController.BuscarRoles(filtro);
+                    dataGridViewRoles.DataSource = resultado;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al buscar roles: " + ex.Message);
+                }
+            }
+        }
+
+        private void btnRefrescar_Click(object sender, EventArgs e)
+        {
+            CargarRoles();
         }
     }
 }

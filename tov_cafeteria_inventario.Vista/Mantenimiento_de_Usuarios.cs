@@ -52,7 +52,7 @@ namespace tov_cafeteria_inventario.Vista
                 txtUsuario.Text = row.Cells["Usuario"].Value.ToString();
                 txtCorreo.Text = row.Cells["Correo"].Value.ToString();
                 cmbRol.Text = row.Cells["RolNombre"].Value.ToString();
-                chkActivo.Checked = Convert.ToBoolean(row.Cells["Estado"].Value);
+                chkActivo.Checked = row.Cells["Estado"].Value.ToString() == "Activo";
                 txtContraseña.Clear();
                 txtConfirmarContraseña.Clear();
             }
@@ -70,42 +70,7 @@ namespace tov_cafeteria_inventario.Vista
             dgvUsuarios.ClearSelection();
         }
 
-        private void btnAgregar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (txtNombre.Text == "" || txtUsuario.Text == "" || txtCorreo.Text == "" || txtContraseña.Text == "" || txtConfirmarContraseña.Text == "")
-                {
-                    MessageBox.Show("Por favor, complete todos los campos.");
-                    return;
-                }
-
-                if (txtContraseña.Text != txtConfirmarContraseña.Text)
-                {
-                    MessageBox.Show("Las contraseñas no coinciden.");
-                    return;
-                }
-
-                UsuarioSistema nuevoUsuario = new UsuarioSistema
-                {
-                    Nombre = txtNombre.Text,
-                    Usuario = txtUsuario.Text,
-                    Correo = txtCorreo.Text,
-                    RoleID = Convert.ToInt32(cmbRol.SelectedValue),
-                    Estado = chkActivo.Checked,
-                    PasswordHash = usuarioController.EncriptarContraseña(txtContraseña.Text)
-                };
-
-                usuarioController.AgregarUsuario(nuevoUsuario);
-                MessageBox.Show("Usuario agregado correctamente.");
-                LimpiarCampos();
-                CargarUsuarios();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al agregar usuario: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+ 
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
@@ -135,7 +100,7 @@ namespace tov_cafeteria_inventario.Vista
                     Usuario = txtUsuario.Text,
                     Correo = txtCorreo.Text,
                     RoleID = Convert.ToInt32(cmbRol.SelectedValue),
-                    Estado = chkActivo.Checked,
+                    Estado = chkActivo.Checked ? "Activo" : "Inactivo",
                     PasswordHash = string.IsNullOrWhiteSpace(txtContraseña.Text)
                         ? usuarioController.ObtenerPasswordActual(id)
                         : usuarioController.EncriptarContraseña(txtContraseña.Text)
@@ -189,6 +154,62 @@ namespace tov_cafeteria_inventario.Vista
         private void Mantenimiento_de_Usuarios_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(filtro))
+            {
+                CargarUsuarios();
+            }
+            else
+            {
+                dgvUsuarios.DataSource = usuarioController.BuscarUsuarios(filtro);
+            }
+        }
+
+        private void btnActualizar_Click(object sender, EventArgs e)
+        {
+            CargarUsuarios();
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (txtNombre.Text == "" || txtUsuario.Text == "" || txtCorreo.Text == "" || txtContraseña.Text == "" || txtConfirmarContraseña.Text == "")
+                {
+                    MessageBox.Show("Por favor, complete todos los campos.");
+                    return;
+                }
+
+                if (txtContraseña.Text != txtConfirmarContraseña.Text)
+                {
+                    MessageBox.Show("Las contraseñas no coinciden.");
+                    return;
+                }
+
+                UsuarioSistema nuevoUsuario = new UsuarioSistema
+                {
+                    Nombre = txtNombre.Text,
+                    Usuario = txtUsuario.Text,
+                    Correo = txtCorreo.Text,
+                    RoleID = Convert.ToInt32(cmbRol.SelectedValue),
+                    Estado = chkActivo.Checked ? "Activo" : "Inactivo",
+                    PasswordHash = usuarioController.EncriptarContraseña(txtContraseña.Text)
+                };
+
+                usuarioController.AgregarUsuario(nuevoUsuario);
+                MessageBox.Show("Usuario agregado correctamente.");
+                LimpiarCampos();
+                CargarUsuarios();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al agregar usuario: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

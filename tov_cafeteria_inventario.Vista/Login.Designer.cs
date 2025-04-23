@@ -31,7 +31,7 @@ namespace tov_cafeteria_inventario.Vista
             // lblUsuario
             // 
             this.lblUsuario.AutoSize = true;
-            this.lblUsuario.Location = new System.Drawing.Point(20, 20);
+            this.lblUsuario.Location = new System.Drawing.Point(31, 18);
             this.lblUsuario.Name = "lblUsuario";
             this.lblUsuario.Size = new System.Drawing.Size(46, 13);
             this.lblUsuario.TabIndex = 0;
@@ -40,7 +40,7 @@ namespace tov_cafeteria_inventario.Vista
             // lblContrasena
             // 
             this.lblContrasena.AutoSize = true;
-            this.lblContrasena.Location = new System.Drawing.Point(20, 60);
+            this.lblContrasena.Location = new System.Drawing.Point(31, 58);
             this.lblContrasena.Name = "lblContrasena";
             this.lblContrasena.Size = new System.Drawing.Size(64, 13);
             this.lblContrasena.TabIndex = 2;
@@ -48,14 +48,14 @@ namespace tov_cafeteria_inventario.Vista
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(100, 20);
+            this.txtUsuario.Location = new System.Drawing.Point(111, 18);
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.Size = new System.Drawing.Size(200, 20);
             this.txtUsuario.TabIndex = 1;
             // 
             // txtContrasena
             // 
-            this.txtContrasena.Location = new System.Drawing.Point(100, 60);
+            this.txtContrasena.Location = new System.Drawing.Point(111, 58);
             this.txtContrasena.Name = "txtContrasena";
             this.txtContrasena.PasswordChar = '*';
             this.txtContrasena.Size = new System.Drawing.Size(200, 20);
@@ -63,7 +63,7 @@ namespace tov_cafeteria_inventario.Vista
             // 
             // btnIniciarSesion
             // 
-            this.btnIniciarSesion.Location = new System.Drawing.Point(120, 100);
+            this.btnIniciarSesion.Location = new System.Drawing.Point(131, 98);
             this.btnIniciarSesion.Name = "btnIniciarSesion";
             this.btnIniciarSesion.Size = new System.Drawing.Size(100, 30);
             this.btnIniciarSesion.TabIndex = 4;

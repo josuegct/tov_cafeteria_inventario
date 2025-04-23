@@ -54,38 +54,6 @@ namespace tov_cafeteria_inventario.Vista
             }
         }
 
-        private void btn_agregar_Click(object sender, EventArgs e)
-        {
-            if (CamposVacios())
-            {
-                MessageBox.Show("Por favor, complete todos los campos.");
-                return;
-            }
-
-            string correoReal = (txtCorreo.Text == "ejemplo@correo.com") ? "" : txtCorreo.Text;
-
-            Proveedor proveedor = new Proveedor
-            {
-                Nombre = txt_nombre.Text,
-                Cedula = mtbCedula.Text,
-                Telefono = mtbTelefono.Text,
-                Correo = correoReal,
-                Direccion = txt_direccion.Text
-            };
-
-            try
-            {
-                proveedorController.AgregarProveedorConProductos(proveedor, txtProductList.Lines.ToList());
-                MessageBox.Show("Proveedor y productos agregados correctamente.");
-                LimpiarCampos();
-                CargarProveedores();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al agregar proveedor: " + ex.Message);
-            }
-        }
-
         private void btn_modificar_Click(object sender, EventArgs e)
         {
             if (proveedorIDSeleccionado == -1)
@@ -114,8 +82,13 @@ namespace tov_cafeteria_inventario.Vista
 
             try
             {
-                proveedorController.ModificarProveedorConProductos(proveedor, txtProductList.Lines.ToList());
-                MessageBox.Show("Proveedor y productos modificados correctamente.");
+                proveedorController.ModificarProveedorConProductos(
+                    proveedor,
+                    txtProductList.Lines
+                        .Select(l => l.Trim())
+                        .Where(l => !string.IsNullOrWhiteSpace(l))
+                        .ToList()
+                ); MessageBox.Show("Proveedor y productos modificados correctamente.");
                 LimpiarCampos();
                 CargarProveedores();
             }
@@ -147,11 +120,6 @@ namespace tov_cafeteria_inventario.Vista
             {
                 MessageBox.Show("Error al eliminar proveedor: " + ex.Message);
             }
-        }
-
-        private void btn_limpiar_Click(object sender, EventArgs e)
-        {
-            LimpiarCampos();
         }
 
         private void LimpiarCampos()
@@ -224,6 +192,77 @@ namespace tov_cafeteria_inventario.Vista
                 txtCorreo.Text = "ejemplo@correo.com";
                 txtCorreo.ForeColor = Color.Gray;
             }
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (CamposVacios())
+            {
+                MessageBox.Show("Por favor, complete todos los campos.");
+                return;
+            }
+
+            string correoReal = (txtCorreo.Text == "ejemplo@correo.com") ? "" : txtCorreo.Text;
+
+            Proveedor proveedor = new Proveedor
+            {
+                Nombre = txt_nombre.Text,
+                Cedula = mtbCedula.Text,
+                Telefono = mtbTelefono.Text,
+                Correo = correoReal,
+                Direccion = txt_direccion.Text
+            };
+
+            try
+            {
+                proveedorController.AgregarProveedorConProductos(
+                    proveedor,
+                    txtProductList.Lines
+                        .Select(l => l.Trim())
+                        .Where(l => !string.IsNullOrWhiteSpace(l))
+                        .ToList()
+                );
+
+                MessageBox.Show("Proveedor y productos agregados correctamente.");
+                LimpiarCampos();
+                CargarProveedores();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al agregar proveedor: " + ex.Message);
+            }
+        }
+
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+            LimpiarCampos();
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(filtro))
+            {
+                CargarProveedores();
+            }
+            else
+            {
+                try
+                {
+                    var resultado = proveedorController.BuscarProveedores(filtro);
+                    dataGridViewProveedores.DataSource = resultado;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al buscar proveedores: " + ex.Message);
+                }
+            }
+        }
+
+        private void btnRefrescar_Click(object sender, EventArgs e)
+        {
+            CargarProveedores();
         }
     }
 }

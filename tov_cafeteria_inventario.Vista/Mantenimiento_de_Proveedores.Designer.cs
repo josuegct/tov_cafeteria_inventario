@@ -11,10 +11,10 @@
         private System.Windows.Forms.Label lbl_direccion;
         private System.Windows.Forms.TextBox txt_nombre;
         private System.Windows.Forms.TextBox txt_direccion;
-        private System.Windows.Forms.Button btn_agregar;
+        private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btn_modificar;
         private System.Windows.Forms.Button btn_eliminar;
-        private System.Windows.Forms.Button btn_limpiar;
+        private System.Windows.Forms.Button btnNuevo;
         private System.Windows.Forms.DataGridView dataGridViewProveedores;
 
         protected override void Dispose(bool disposing)
@@ -26,6 +26,7 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lbl_titulo = new System.Windows.Forms.Label();
             this.lbl_nombre = new System.Windows.Forms.Label();
             this.lbl_cedula = new System.Windows.Forms.Label();
@@ -34,16 +35,20 @@
             this.lbl_direccion = new System.Windows.Forms.Label();
             this.txt_nombre = new System.Windows.Forms.TextBox();
             this.txt_direccion = new System.Windows.Forms.TextBox();
-            this.btn_agregar = new System.Windows.Forms.Button();
+            this.btnGuardar = new System.Windows.Forms.Button();
             this.btn_modificar = new System.Windows.Forms.Button();
             this.btn_eliminar = new System.Windows.Forms.Button();
-            this.btn_limpiar = new System.Windows.Forms.Button();
+            this.btnNuevo = new System.Windows.Forms.Button();
             this.dataGridViewProveedores = new System.Windows.Forms.DataGridView();
             this.lblProductos = new System.Windows.Forms.Label();
             this.txtProductList = new System.Windows.Forms.TextBox();
             this.mtbCedula = new System.Windows.Forms.MaskedTextBox();
             this.mtbTelefono = new System.Windows.Forms.MaskedTextBox();
             this.txtCorreo = new System.Windows.Forms.TextBox();
+            this.btnBuscar = new System.Windows.Forms.Button();
+            this.btnRefrescar = new System.Windows.Forms.Button();
+            this.txtBuscar = new System.Windows.Forms.TextBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProveedores)).BeginInit();
             this.SuspendLayout();
             // 
@@ -117,14 +122,14 @@
             this.txt_direccion.Size = new System.Drawing.Size(200, 53);
             this.txt_direccion.TabIndex = 10;
             // 
-            // btn_agregar
+            // btnGuardar
             // 
-            this.btn_agregar.Location = new System.Drawing.Point(539, 69);
-            this.btn_agregar.Name = "btn_agregar";
-            this.btn_agregar.Size = new System.Drawing.Size(80, 25);
-            this.btn_agregar.TabIndex = 11;
-            this.btn_agregar.Text = "Agregar";
-            this.btn_agregar.Click += new System.EventHandler(this.btn_agregar_Click);
+            this.btnGuardar.Location = new System.Drawing.Point(539, 69);
+            this.btnGuardar.Name = "btnGuardar";
+            this.btnGuardar.Size = new System.Drawing.Size(80, 25);
+            this.btnGuardar.TabIndex = 11;
+            this.btnGuardar.Text = "Guardar";
+            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             // 
             // btn_modificar
             // 
@@ -144,20 +149,20 @@
             this.btn_eliminar.Text = "Eliminar";
             this.btn_eliminar.Click += new System.EventHandler(this.btn_eliminar_Click);
             // 
-            // btn_limpiar
+            // btnNuevo
             // 
-            this.btn_limpiar.Location = new System.Drawing.Point(539, 189);
-            this.btn_limpiar.Name = "btn_limpiar";
-            this.btn_limpiar.Size = new System.Drawing.Size(80, 25);
-            this.btn_limpiar.TabIndex = 14;
-            this.btn_limpiar.Text = "Limpiar";
-            this.btn_limpiar.Click += new System.EventHandler(this.btn_limpiar_Click);
+            this.btnNuevo.Location = new System.Drawing.Point(539, 189);
+            this.btnNuevo.Name = "btnNuevo";
+            this.btnNuevo.Size = new System.Drawing.Size(80, 25);
+            this.btnNuevo.TabIndex = 14;
+            this.btnNuevo.Text = "Nuevo";
+            this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             // 
             // dataGridViewProveedores
             // 
-            this.dataGridViewProveedores.Location = new System.Drawing.Point(22, 259);
+            this.dataGridViewProveedores.Location = new System.Drawing.Point(22, 319);
             this.dataGridViewProveedores.Name = "dataGridViewProveedores";
-            this.dataGridViewProveedores.Size = new System.Drawing.Size(597, 200);
+            this.dataGridViewProveedores.Size = new System.Drawing.Size(597, 241);
             this.dataGridViewProveedores.TabIndex = 15;
             this.dataGridViewProveedores.SelectionChanged += new System.EventHandler(this.dataGridViewProveedores_SelectionChanged);
             // 
@@ -201,9 +206,44 @@
             this.txtCorreo.Size = new System.Drawing.Size(200, 20);
             this.txtCorreo.TabIndex = 20;
             // 
+            // btnBuscar
+            // 
+            this.btnBuscar.Location = new System.Drawing.Point(453, 290);
+            this.btnBuscar.Name = "btnBuscar";
+            this.btnBuscar.Size = new System.Drawing.Size(80, 23);
+            this.btnBuscar.TabIndex = 21;
+            this.btnBuscar.Text = "Buscar";
+            this.btnBuscar.UseVisualStyleBackColor = true;
+            this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
+            // 
+            // btnRefrescar
+            // 
+            this.btnRefrescar.Location = new System.Drawing.Point(539, 290);
+            this.btnRefrescar.Name = "btnRefrescar";
+            this.btnRefrescar.Size = new System.Drawing.Size(80, 23);
+            this.btnRefrescar.TabIndex = 22;
+            this.btnRefrescar.Text = "Refrescar";
+            this.btnRefrescar.UseVisualStyleBackColor = true;
+            this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
+            // 
+            // txtBuscar
+            // 
+            this.txtBuscar.Location = new System.Drawing.Point(22, 290);
+            this.txtBuscar.Name = "txtBuscar";
+            this.txtBuscar.Size = new System.Drawing.Size(425, 20);
+            this.txtBuscar.TabIndex = 23;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
             // Mantenimiento_de_Proveedores
             // 
             this.ClientSize = new System.Drawing.Size(642, 599);
+            this.Controls.Add(this.txtBuscar);
+            this.Controls.Add(this.btnRefrescar);
+            this.Controls.Add(this.btnBuscar);
             this.Controls.Add(this.txtCorreo);
             this.Controls.Add(this.mtbTelefono);
             this.Controls.Add(this.mtbCedula);
@@ -217,10 +257,10 @@
             this.Controls.Add(this.txt_nombre);
             this.Controls.Add(this.txtProductList);
             this.Controls.Add(this.txt_direccion);
-            this.Controls.Add(this.btn_agregar);
+            this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.btn_modificar);
             this.Controls.Add(this.btn_eliminar);
-            this.Controls.Add(this.btn_limpiar);
+            this.Controls.Add(this.btnNuevo);
             this.Controls.Add(this.dataGridViewProveedores);
             this.Name = "Mantenimiento_de_Proveedores";
             this.Text = "Mantenimiento de Proveedores";
@@ -236,5 +276,9 @@
         private System.Windows.Forms.MaskedTextBox mtbCedula;
         private System.Windows.Forms.MaskedTextBox mtbTelefono;
         private System.Windows.Forms.TextBox txtCorreo;
+        private System.Windows.Forms.Button btnBuscar;
+        private System.Windows.Forms.Button btnRefrescar;
+        private System.Windows.Forms.TextBox txtBuscar;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }

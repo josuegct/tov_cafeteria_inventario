@@ -35,6 +35,40 @@ namespace tov_cafeteria_inventario.Controlador
             }
             return proveedores;
         }
+        public List<Proveedor> BuscarProveedores(string filtro)
+        {
+            var lista = new List<Proveedor>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = @"
+            SELECT ProveedorID, Nombre, Cedula, Telefono, Correo, Direccion
+            FROM Proveedores
+            WHERE Nombre LIKE @filtro OR Cedula LIKE @filtro OR Correo LIKE @filtro";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@filtro", "%" + filtro + "%");
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    lista.Add(new Proveedor
+                    {
+                        ProveedorID = Convert.ToInt32(reader["ProveedorID"]),
+                        Nombre = reader["Nombre"].ToString(),
+                        Cedula = reader["Cedula"].ToString(),
+                        Telefono = reader["Telefono"].ToString(),
+                        Correo = reader["Correo"].ToString(),
+                        Direccion = reader["Direccion"].ToString()
+                    });
+                }
+
+                conn.Close();
+            }
+
+            return lista;
+        }
 
         public void AgregarProveedorConProductos(Proveedor proveedor, List<string> productos)
         {
