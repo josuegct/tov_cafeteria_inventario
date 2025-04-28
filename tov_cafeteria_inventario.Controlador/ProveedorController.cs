@@ -118,25 +118,36 @@ namespace tov_cafeteria_inventario.Controlador
                     cmd.ExecuteNonQuery();
                 }
 
-                string deleteOld = "DELETE FROM Productos WHERE ProveedorID = @ProveedorID";
-                using (SqlCommand delCmd = new SqlCommand(deleteOld, conn))
+                List<string> productosActuales = new List<string>();
+                string querySelect = "SELECT Nombre FROM Productos WHERE ProveedorID = @ProveedorID";
+                using (SqlCommand cmdSelect = new SqlCommand(querySelect, conn))
                 {
-                    delCmd.Parameters.AddWithValue("@ProveedorID", proveedor.ProveedorID);
-                    delCmd.ExecuteNonQuery();
+                    cmdSelect.Parameters.AddWithValue("@ProveedorID", proveedor.ProveedorID);
+                    using (SqlDataReader reader = cmdSelect.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            productosActuales.Add(reader.GetString(0));
+                        }
+                    }
                 }
 
                 foreach (var nombreProducto in productos)
                 {
-                    string insertProducto = "INSERT INTO Productos (Nombre, Categoria, CantidadDisponible, UnidadMedida, PrecioUnitario, ProveedorID) VALUES (@Nombre, 'Sin categoría', 0, 'N/A', 0, @ProveedorID)";
-                    using (SqlCommand prodCmd = new SqlCommand(insertProducto, conn))
+                    if (!productosActuales.Contains(nombreProducto))
                     {
-                        prodCmd.Parameters.AddWithValue("@Nombre", nombreProducto.Trim());
-                        prodCmd.Parameters.AddWithValue("@ProveedorID", proveedor.ProveedorID);
-                        prodCmd.ExecuteNonQuery();
+                        string insertProducto = "INSERT INTO Productos (Nombre, Categoria, CantidadDisponible, UnidadMedida, PrecioUnitario, ProveedorID) VALUES (@Nombre, 'Sin categoría', 0, 'N/A', 0, @ProveedorID)";
+                        using (SqlCommand cmdInsert = new SqlCommand(insertProducto, conn))
+                        {
+                            cmdInsert.Parameters.AddWithValue("@Nombre", nombreProducto.Trim());
+                            cmdInsert.Parameters.AddWithValue("@ProveedorID", proveedor.ProveedorID);
+                            cmdInsert.ExecuteNonQuery();
+                        }
                     }
                 }
             }
         }
+
 
         public void EliminarProveedor(int proveedorID)
         {

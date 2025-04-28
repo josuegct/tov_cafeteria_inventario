@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
-using tov_cafeteria_inventario.Controlador;
-using tov_cafeteria_inventario.Modelo;
 
 namespace tov_cafeteria_inventario.Vista
 {
@@ -21,7 +14,30 @@ namespace tov_cafeteria_inventario.Vista
 
         private void Ayuda_Load(object sender, EventArgs e)
         {
+        }
 
+        private void btnManualUsuario_Click(object sender, EventArgs e)
+        {
+            string rutaPDF = Application.StartupPath + @"\Manual_Usuario_Cafeteria_TOV.pdf";
+
+            if (File.Exists(rutaPDF))
+            {
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.FileName = rutaPDF;
+                    startInfo.UseShellExecute = true;
+                    Process.Start(startInfo);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No se pudo abrir el manual de usuario.\n\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No se encontró el manual de usuario.\n\nRuta buscada: " + rutaPDF, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

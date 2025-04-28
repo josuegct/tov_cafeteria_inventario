@@ -103,7 +103,14 @@ namespace tov_cafeteria_inventario.Vista
 
         private void btnFiltrar_Click(object sender, EventArgs e)
         {
-            int? usuarioId = Convert.ToInt32(cmbUsuarios.SelectedValue) == 0 ? null : (int?)cmbUsuarios.SelectedValue;
+            int? usuarioId = null;
+
+            if (cmbUsuarios.SelectedValue != null && cmbUsuarios.SelectedValue != DBNull.Value)
+            {
+                int valor = Convert.ToInt32(cmbUsuarios.SelectedValue);
+                usuarioId = (valor == 0) ? null : (int?)valor;
+            }
+
             DateTime desde = dtpDesde.Value.Date;
             DateTime hasta = dtpHasta.Value.Date.AddDays(1).AddSeconds(-1);
 

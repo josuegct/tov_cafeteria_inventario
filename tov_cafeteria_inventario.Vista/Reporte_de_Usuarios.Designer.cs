@@ -72,7 +72,7 @@
             // 
             // btnFiltrar
             // 
-            this.btnFiltrar.Location = new System.Drawing.Point(597, 155);
+            this.btnFiltrar.Location = new System.Drawing.Point(674, 154);
             this.btnFiltrar.Name = "btnFiltrar";
             this.btnFiltrar.Size = new System.Drawing.Size(99, 23);
             this.btnFiltrar.TabIndex = 4;
@@ -149,7 +149,7 @@
             // lblTotal
             // 
             this.lblTotal.AutoSize = true;
-            this.lblTotal.Location = new System.Drawing.Point(598, 120);
+            this.lblTotal.Location = new System.Drawing.Point(671, 120);
             this.lblTotal.Name = "lblTotal";
             this.lblTotal.Size = new System.Drawing.Size(78, 13);
             this.lblTotal.TabIndex = 13;
@@ -157,7 +157,7 @@
             // 
             // Reporte_de_Usuarios
             // 
-            this.ClientSize = new System.Drawing.Size(800, 624);
+            this.ClientSize = new System.Drawing.Size(802, 624);
             this.Controls.Add(this.lblTotal);
             this.Controls.Add(this.dtpHasta);
             this.Controls.Add(this.dtpDesde);

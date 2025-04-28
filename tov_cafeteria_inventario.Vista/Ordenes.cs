@@ -29,7 +29,6 @@ namespace tov_cafeteria_inventario.Vista
             dgvOrdenes.AllowUserToAddRows = false;
             dgvOrdenes.ReadOnly = true;
 
-            //cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso", "Completada" });
             cmbEstado.Items.AddRange(new string[] { "Pendiente", "En proceso" });
 
             CargarProveedores();
@@ -81,9 +80,22 @@ namespace tov_cafeteria_inventario.Vista
             try
             {
                 var proveedores = ordenController.ObtenerProveedores();
-                cmbProveedor.DataSource = proveedores;
+
+                DataTable proveedoresTable = new DataTable();
+                proveedoresTable.Columns.Add("ProveedorID", typeof(int));
+                proveedoresTable.Columns.Add("Nombre", typeof(string));
+
+                proveedoresTable.Rows.Add(0, ""); // ID=0, nombre vacío
+
+                foreach (var proveedor in proveedores)
+                {
+                    proveedoresTable.Rows.Add(proveedor.ProveedorID, proveedor.Nombre);
+                }
+
+                cmbProveedor.DataSource = proveedoresTable;
                 cmbProveedor.DisplayMember = "Nombre";
                 cmbProveedor.ValueMember = "ProveedorID";
+                cmbProveedor.SelectedIndex = 0; // Selecciona primero el blanco
             }
             catch (Exception ex)
             {
@@ -314,7 +326,6 @@ namespace tov_cafeteria_inventario.Vista
             }
             else
             {
-                // Si se deselecciona todo, se quita la opción "Completada"
                 if (cmbEstado.Items.Contains("Completada"))
                 {
                     cmbEstado.Items.Remove("Completada");

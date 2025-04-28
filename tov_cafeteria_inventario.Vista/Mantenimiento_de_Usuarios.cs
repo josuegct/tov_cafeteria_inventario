@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using tov_cafeteria_inventario.Controlador;
 using tov_cafeteria_inventario.Modelo;
@@ -18,8 +19,30 @@ namespace tov_cafeteria_inventario.Vista
             CargarRoles();
             CargarUsuarios();
             dgvUsuarios.SelectionChanged += dgvUsuarios_SelectionChanged;
+
+            txtCorreo.ForeColor = Color.Gray;
+            txtCorreo.Text = "ejemplo@correo.com";
+            txtCorreo.Enter += txtCorreo_Enter;
+            txtCorreo.Leave += txtCorreo_Leave;
         }
 
+        private void txtCorreo_Enter(object sender, EventArgs e)
+        {
+            if (txtCorreo.Text == "ejemplo@correo.com")
+            {
+                txtCorreo.Text = "";
+                txtCorreo.ForeColor = Color.Black;
+            }
+        }
+
+        private void txtCorreo_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtCorreo.Text))
+            {
+                txtCorreo.Text = "ejemplo@correo.com";
+                txtCorreo.ForeColor = Color.Gray;
+            }
+        }
         private void Mantenimiento_de_Usuarios_FormClosed(object sender, FormClosedEventArgs e)
         {
             Mantenimientos menu = new Mantenimientos(usuarioID);

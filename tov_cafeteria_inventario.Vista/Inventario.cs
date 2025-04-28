@@ -73,7 +73,7 @@ namespace tov_cafeteria_inventario.Vista
             }
         }
 
-        private void RegistrarMovimientoInventario(Orden orden, int cantidad, decimal precioUnitario, decimal precioTotal)
+        private void RegistrarMovimientoInventario(Orden orden, int cantidad, decimal precioUnitario, decimal precioTotal, string tipoMovimiento)
         {
             string unidadMedida = cmbUnidadMedida.SelectedItem?.ToString() ?? "N/A";
 
@@ -84,7 +84,7 @@ namespace tov_cafeteria_inventario.Vista
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@ProductoID", orden.ProductoID);
-                    cmd.Parameters.AddWithValue("@TipoMovimiento", "Ingreso");
+                    cmd.Parameters.AddWithValue("@TipoMovimiento", tipoMovimiento);
                     cmd.Parameters.AddWithValue("@Cantidad", cantidad);
                     cmd.Parameters.AddWithValue("@UsuarioID", orden.UsuarioID);
                     cmd.Parameters.AddWithValue("@PrecioUnitario", precioUnitario);
@@ -347,7 +347,7 @@ namespace tov_cafeteria_inventario.Vista
                     UsuarioID = usuarioID
                 };
 
-                RegistrarMovimientoInventario(orden, (int)cantidad, precioUnitario, precioTotal);
+                RegistrarMovimientoInventario(orden, (int)cantidad, precioUnitario, precioTotal, tipoMovimiento);
                 MessageBox.Show("Movimiento registrado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 CargarMovimientos();
                 LimpiarFormulario();
